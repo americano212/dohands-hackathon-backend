@@ -1,11 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IsEmail, IsIn, IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Content } from './board';
-
-const VENDOR_KEYS: string[] = ['kakao', 'naver', 'google', 'github'];
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -33,17 +31,6 @@ export class User extends CoreEntity {
   @Column({ type: 'varchar', nullable: true, select: false })
   @IsString()
   public refreshToken?: string;
-
-  @ApiProperty({ example: 'kakao' })
-  @Column({ type: 'varchar', nullable: true, default: '', select: false })
-  @IsIn(VENDOR_KEYS)
-  @IsString()
-  public vendor?: string;
-
-  @ApiProperty({ example: '123456789' })
-  @Column({ type: 'varchar', nullable: true, unique: true, select: false })
-  @IsString()
-  public socialId?: string;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];

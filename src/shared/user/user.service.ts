@@ -7,7 +7,6 @@ import { UsersRepository } from './user.repository';
 import { RoleService } from '../role/providers';
 import { UtilService } from '../../common';
 import { LocalRegisterDto, GiveRoleToUserDto } from './dto';
-import { SNSUserDto } from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -26,11 +25,6 @@ export class UserService {
       passwordHash,
       ...userWithoutPassword,
     });
-    return user;
-  }
-
-  public async createSNSUser(snsUserData: SNSUserDto): Promise<User> {
-    const user = await this.usersRepository.create(snsUserData);
     return user;
   }
 

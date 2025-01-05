@@ -3,29 +3,13 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { AuthService } from './auth.service';
 import { UserModule } from '../shared/user/user.module';
-import {
-  LocalStrategy,
-  KakaoStrategy,
-  NaverStrategy,
-  GoogleStrategy,
-  GithubStrategy,
-  JwtStrategy,
-} from './strategies';
+import { LocalStrategy, JwtStrategy } from './strategies';
 import { AuthSerializer } from './auth.serializer';
 
 @Global()
 @Module({
   imports: [JwtModule.register({}), UserModule],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    GoogleStrategy,
-    GithubStrategy,
-    KakaoStrategy,
-    NaverStrategy,
-    JwtStrategy,
-    AuthSerializer,
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy, AuthSerializer],
   exports: [AuthService],
 })
 export class AuthModule {}

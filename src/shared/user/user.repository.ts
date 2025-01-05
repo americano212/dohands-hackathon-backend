@@ -31,8 +31,6 @@ export class UsersRepository {
         userId: true,
         username: true,
         email: true,
-        vendor: true,
-        socialId: true,
         passwordHash: true,
         roles: { roleName: true },
       },
