@@ -25,11 +25,9 @@ async function bootstrap(): Promise<string> {
 
   if (isProduction) app.enable('trust proxy');
 
-  if (!isProduction) {
-    const documentConfig = new APIDocument().initializeOptions();
-    const document = SwaggerModule.createDocument(app, documentConfig);
-    SwaggerModule.setup('/docs', app, document); // http://localhost/docs
-  }
+  const documentConfig = new APIDocument().initializeOptions();
+  const document = SwaggerModule.createDocument(app, documentConfig);
+  SwaggerModule.setup('/docs', app, document); // http://localhost/docs
 
   app.enableShutdownHooks();
 

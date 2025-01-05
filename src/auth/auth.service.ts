@@ -6,10 +6,7 @@ import { User } from '#entities/index';
 import { ConfigService, UtilService } from '../common';
 import { UsersRepository } from '../shared/user/user.repository';
 import { JwtPayload, JwtSign, Payload } from './auth.interface';
-import { SNSUserDto } from 'src/shared/user/dto';
 import { NullableType } from 'src/common/types';
-import { SNSLoginDto } from 'src/base/dto';
-import { UserService } from 'src/shared/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -18,14 +15,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly util: UtilService,
     private readonly config: ConfigService,
-    private readonly user: UserService,
   ) {}
-
-  public async snsLogin(snsUser: SNSLoginDto): Promise<JwtSign> {
-    let user = await this.validateSNSUser(snsUser);
-    user = user ? user : await this.user.createSNSUser(snsUser);
-    return this.jwtSign(user);
-  }
 
   public async validateUser(email: string, password: string): Promise<NullableType<User>> {
     const user = await this.usersRepository.findOneByEmail(email);
@@ -34,14 +24,6 @@ export class AuthService {
     const isMatch = await this.util.passwordCompare(password, user.passwordHash);
     if (!isMatch) return null;
     delete user.passwordHash;
-    return user;
-  }
-
-  public async validateSNSUser(snsUserData: SNSUserDto): Promise<NullableType<User>> {
-    const user = await this.usersRepository.findOneByEmail(snsUserData.email);
-    if (!user) return null;
-    if (snsUserData.vendor !== user.vendor)
-      throw new HttpException(`Email already exists in ${user.vendor}`, HttpStatus.BAD_REQUEST);
     return user;
   }
 
