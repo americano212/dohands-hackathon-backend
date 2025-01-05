@@ -48,7 +48,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*' './node_modules/*' './test/*' awscliv2.zip './.vscode/*' './src/*' './aws/*' './bin/*'
+        run: zip -r deploy.zip . -x '*.git*' './node_modules/*' './test/*' awscliv2.zip './.vscode/*' './src/*' './aws/*' './bin/*' './docker/*'
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
