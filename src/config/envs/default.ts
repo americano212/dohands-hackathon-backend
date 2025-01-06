@@ -10,7 +10,7 @@ export const config = {
     port: process.env['PORT'],
   },
   jwt: {
-    accessTokenExpire: process.env['ACCESS_TOKEN_EXPIRE'] || '1d',
+    accessTokenExpire: process.env['ACCESS_TOKEN_EXPIRE'] || '30d',
     refreshTokenExpire: process.env['REFRESH_TOKEN_EXPIRE'] || '30d',
   },
   aws: {
