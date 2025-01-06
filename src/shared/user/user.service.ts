@@ -5,7 +5,6 @@ import { User } from '#entities/user.entity';
 
 import { UsersRepository } from './user.repository';
 import { RoleService } from '../role/providers';
-import { UtilService } from '../../common';
 import { LocalRegisterDto, GiveRoleToUserDto } from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -13,16 +12,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly util: UtilService,
     private readonly role: RoleService,
   ) {}
 
   @Transactional()
   public async createLocalUser(userData: LocalRegisterDto): Promise<User> {
     const { password, ...userWithoutPassword } = userData;
-    const passwordHash = await this.util.passwordEncoding(password);
     const user = await this.usersRepository.create({
-      passwordHash,
+      password,
       ...userWithoutPassword,
     });
     return user;
@@ -40,8 +37,8 @@ export class UserService {
     return isSuccess;
   }
 
-  public async isExistEmail(email: string): Promise<boolean> {
-    return await this.usersRepository.isExistEmail(email);
+  public async isExistId(id: string): Promise<boolean> {
+    return await this.usersRepository.isExistId(id);
   }
 
   public async update(userId: number, updateUserdata: UpdateUserDto): Promise<boolean> {
