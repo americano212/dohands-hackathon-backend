@@ -1,6 +1,5 @@
 import { Role } from 'src/common';
 import { MigrationInterface, QueryRunner } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 export class Seed1703915494755 implements MigrationInterface {
   name: string = 'Seed1703915494755';
@@ -57,16 +56,14 @@ export class Seed1703915494755 implements MigrationInterface {
 
     if (!superAdminId || !superAdminPassword || !superAdminUsername) throw Error();
 
-    const superAdminPasswordHash = await this.passwordEncoding(superAdminPassword);
-
     const result = await queryRunner.query(
       `SELECT count(*) as cnt FROM user WHERE id='${superAdminId}'`,
     );
     const isExistId = Number(result[0].cnt) ? true : false;
     if (isExistId) throw Error();
     const resultSuperAdmin = await queryRunner.query(
-      `INSERT INTO user (username, id, password_hash) 
-      VALUES ('SuperAdmin', '${superAdminId}', '${superAdminPasswordHash}')`,
+      `INSERT INTO user (username, id, password) 
+      VALUES ('SuperAdmin', '${superAdminId}', '${superAdminPassword}')`,
     );
     const superAdminUserId = resultSuperAdmin.insertId;
 
@@ -85,12 +82,5 @@ export class Seed1703915494755 implements MigrationInterface {
 
     if (!resultUserRole.affectedRows) throw Error();
     return true;
-  }
-
-  private async passwordEncoding(password: string): Promise<string> {
-    const saltOrRounds = Number(process.env['BCRYPT_SALT']);
-    if (!saltOrRounds) throw Error();
-    const passwordHash = await bcrypt.hash(password, saltOrRounds);
-    return passwordHash;
   }
 }
