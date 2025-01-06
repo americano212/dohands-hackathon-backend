@@ -33,6 +33,11 @@ export class User extends CoreEntity {
   @IsString()
   public refreshToken?: string;
 
+  @ApiProperty({ example: '<FCM Token>', description: 'FCM Token' })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public fcmToken?: string;
+
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
 
