@@ -1,4 +1,4 @@
 import { PickType } from '@nestjs/swagger';
-import { LocalRegisterDto } from 'src/shared/user/dto';
+import { CreateUserDto } from 'src/shared/user/dto';
 
-export class LocalLoginDto extends PickType(LocalRegisterDto, ['id', 'password'] as const) {}
+export class LocalLoginDto extends PickType(CreateUserDto, ['id', 'password'] as const) {}

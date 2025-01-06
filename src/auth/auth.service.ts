@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { User } from '#entities/index';
 
-import { ConfigService, UtilService } from '../common';
+import { ConfigService } from '../common';
 import { UsersRepository } from '../shared/user/user.repository';
 import { JwtPayload, JwtSign, Payload } from './auth.interface';
 import { NullableType } from 'src/common/types';
@@ -13,7 +13,6 @@ export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly jwt: JwtService,
-    private readonly util: UtilService,
     private readonly config: ConfigService,
   ) {}
 
@@ -21,7 +20,7 @@ export class AuthService {
     const user = await this.usersRepository.findOneById(id);
     if (!user) return null;
     if (!user.password) return null;
-    const isMatch = await this.util.passwordCompare(password, user.password); // TODO
+    const isMatch = password === user.password; // TODO
     if (!isMatch) return null;
     delete user.password;
     return user;

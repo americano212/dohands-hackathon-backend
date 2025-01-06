@@ -18,15 +18,16 @@ export class User extends CoreEntity {
   @IsString()
   public username?: string;
 
-  @Column({ type: 'varchar', nullable: true, select: false })
-  @IsString()
-  public password?: string;
-
   @ApiProperty({ example: 'minsukim', description: '로그인을 위한 ID' })
   @Column({ type: 'varchar', nullable: false, unique: true })
   @IsNotEmpty()
   @IsString()
   public id!: string;
+
+  @ApiProperty({ example: 'password', description: '로그인시 비밀번호(평문저장 주의)' })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public password?: string;
 
   @Column({ type: 'varchar', nullable: true, select: false })
   @IsString()
