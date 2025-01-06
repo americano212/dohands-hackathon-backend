@@ -24,4 +24,9 @@ export const config = {
   slack: {
     webhookUrl: process.env['SLACK_WEBHOOK_URL'] || '',
   },
+  googleSheet: {
+    client_email: process.env['GOOGLE_CLIENT_EMAIL'] || '',
+    private_key: process.env['GOOGLE_PRIVATE_KEY'] || '',
+    spread_sheet_id: process.env['GOOGLE_SPREAD_SHEET_ID'],
+  },
 };
