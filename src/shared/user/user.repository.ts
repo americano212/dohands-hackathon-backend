@@ -23,26 +23,26 @@ export class UsersRepository {
     });
   }
 
-  public async findOneByEmail(email: string): Promise<NullableType<User>> {
+  public async findOneById(id: string): Promise<NullableType<User>> {
     return await this.usersRepository.findOne({
       relations: { roles: true },
-      where: { email: email },
+      where: { id: id },
       select: {
         userId: true,
         username: true,
-        email: true,
-        passwordHash: true,
+        id: true,
+        password: true,
         roles: { roleName: true },
       },
     });
   }
 
   public async isExistUsername(username: string): Promise<boolean> {
-    return await this.usersRepository.exist({ where: { username: username } });
+    return await this.usersRepository.exists({ where: { username: username } });
   }
 
-  public async isExistEmail(email: string): Promise<boolean> {
-    return await this.usersRepository.exist({ where: { email: email } });
+  public async isExistId(id: string): Promise<boolean> {
+    return await this.usersRepository.exists({ where: { id: id } });
   }
 
   public async setRefreshToken(userId: number, token: string): Promise<boolean> {

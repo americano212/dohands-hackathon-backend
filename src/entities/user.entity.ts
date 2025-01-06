@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IsEmail, IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Content } from './board';
@@ -20,13 +20,13 @@ export class User extends CoreEntity {
 
   @Column({ type: 'varchar', nullable: true, select: false })
   @IsString()
-  public passwordHash?: string;
+  public password?: string;
 
-  @ApiProperty({ example: 'test@example.com' })
+  @ApiProperty({ example: 'minsukim', description: '로그인을 위한 ID' })
   @Column({ type: 'varchar', nullable: false, unique: true })
   @IsNotEmpty()
-  @IsEmail()
-  public email!: string;
+  @IsString()
+  public id!: string;
 
   @Column({ type: 'varchar', nullable: true, select: false })
   @IsString()
