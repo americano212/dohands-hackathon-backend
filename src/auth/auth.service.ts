@@ -17,13 +17,13 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
 
-  public async validateUser(email: string, password: string): Promise<NullableType<User>> {
-    const user = await this.usersRepository.findOneByEmail(email);
+  public async validateUser(id: string, password: string): Promise<NullableType<User>> {
+    const user = await this.usersRepository.findOneById(id);
     if (!user) return null;
-    if (!user.passwordHash) return null;
-    const isMatch = await this.util.passwordCompare(password, user.passwordHash);
+    if (!user.password) return null;
+    const isMatch = await this.util.passwordCompare(password, user.password); // TODO
     if (!isMatch) return null;
-    delete user.passwordHash;
+    delete user.password;
     return user;
   }
 

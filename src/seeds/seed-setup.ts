@@ -51,24 +51,24 @@ export class Seed1703915494755 implements MigrationInterface {
 
   // TODO transaction
   private async createSuperAdmin(queryRunner: QueryRunner) {
-    const superAdminEmail = process.env['SUPER_ADMIN_EMAIL'];
+    const superAdminId = process.env['SUPER_ADMIN_ID'];
     const superAdminPassword = process.env['SUPER_ADMIN_PASSWORD'];
     const superAdminUsername = process.env['SUPER_ADMIN_USERNAME'];
 
-    if (!superAdminEmail || !superAdminPassword || !superAdminUsername) throw Error();
+    if (!superAdminId || !superAdminPassword || !superAdminUsername) throw Error();
 
     const superAdminPasswordHash = await this.passwordEncoding(superAdminPassword);
 
     const result = await queryRunner.query(
-      `SELECT count(*) as cnt FROM user WHERE email='${superAdminEmail}'`,
+      `SELECT count(*) as cnt FROM user WHERE id='${superAdminId}'`,
     );
-    const isExistEmail = Number(result[0].cnt) ? true : false;
-    if (isExistEmail) throw Error();
+    const isExistId = Number(result[0].cnt) ? true : false;
+    if (isExistId) throw Error();
     const resultSuperAdmin = await queryRunner.query(
-      `INSERT INTO user (username, email, password_hash) 
-      VALUES ('SuperAdmin', '${superAdminEmail}', '${superAdminPasswordHash}')`,
+      `INSERT INTO user (username, id, password_hash) 
+      VALUES ('SuperAdmin', '${superAdminId}', '${superAdminPasswordHash}')`,
     );
-    const superAdminId = resultSuperAdmin.insertId;
+    const superAdminUserId = resultSuperAdmin.insertId;
 
     const getSuperAdminRoleId = await queryRunner.query(
       `SELECT role_id FROM role WHERE role_name='${Role.SuperAdmin}'`,
@@ -80,7 +80,7 @@ export class Seed1703915494755 implements MigrationInterface {
 
     const resultUserRole = await queryRunner.query(`
     INSERT INTO user_role (role_name, user_id, role_id)
-    VALUES ('${Role.SuperAdmin}', ${superAdminId}, ${superAdminRoleId})
+    VALUES ('${Role.SuperAdmin}', ${superAdminUserId}, ${superAdminRoleId})
     `);
 
     if (!resultUserRole.affectedRows) throw Error();
