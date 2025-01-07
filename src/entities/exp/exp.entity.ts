@@ -27,7 +27,7 @@ export class Exp extends CoreEntity {
   @IsInt()
   public exp!: number;
 
-  @ApiProperty({ example: "ex)J(직무별), H1(상반기 인사평가), H2(하반기 인사평가), L(리더부여), C(전사)",description: 'exp type' })
+  @ApiProperty({ example: "J(직무별), H1(상반기 인사평가), H2(하반기 인사평가), L(리더부여), C(전사)",description: 'exp type' })
   @Column({ type: 'varchar', nullable: false })
   @Max(30)
   @IsString()
