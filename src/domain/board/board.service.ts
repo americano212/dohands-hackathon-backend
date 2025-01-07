@@ -30,8 +30,15 @@ export class BoardService {
 
       if (isExist) {
         // 이미 존재할 때는 글 내용만 업데이트
+        await this.boardsRepository.updateByGoogleSheetId(board.googleSheetId, {
+          title: board.title,
+          content: board.content,
+        });
       } else {
         // 새로운 글일 때는 추가 및 FCM push 알림
+        await this.boardsRepository.create(board);
+        // TODO FCM 연결
+        console.log('Mock FCM Alert~!');
       }
     }
 
