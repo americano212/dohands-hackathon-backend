@@ -76,7 +76,7 @@ export class UserService {
   @Cron(CronExpression.EVERY_MINUTE) // 1분마다 자동 실행
   public async getUserInfoFromGSS(): Promise<boolean> {
     const tabName = 'member_info';
-    const range = 'B10:K20';
+    const range = 'B10:K100'; // TODO 레거시
     const values = await this.gssService.getValueFromSheet({ tabName, range });
 
     for (let idx = 0; idx < values.length; idx++) {
