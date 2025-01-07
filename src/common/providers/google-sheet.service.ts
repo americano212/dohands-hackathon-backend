@@ -7,7 +7,7 @@ import { GetValueFromGoogleSheetDto, WriteValueToGoogleSheetDto } from './dto';
 export class GoogleSheetService {
   constructor(private config: ConfigService) {}
 
-  public async getValueFromSheet(target: GetValueFromGoogleSheetDto): Promise<object> {
+  public async getValueFromSheet(target: GetValueFromGoogleSheetDto): Promise<any[][]> {
     const client_email = this.config.get('googleSheet.client_email');
     const private_key = this.config
       .get('googleSheet.private_key')
@@ -34,8 +34,9 @@ export class GoogleSheetService {
       spreadsheetId: spread_sheet_id,
       range: `${target.tabName}!${target.range}`,
     });
-
-    return context.data;
+    const resValue = context.data.values;
+    if (!resValue) throw new BadRequestException(`Something Wrong`);
+    return resValue;
   }
 
   public async writeValueFromSheet(target: WriteValueToGoogleSheetDto): Promise<object> {
