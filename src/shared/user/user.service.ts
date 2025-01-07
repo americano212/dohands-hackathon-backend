@@ -33,8 +33,24 @@ export class UserService {
 
   public async update(userId: number, updateUserdata: UpdateUserDto): Promise<boolean> {
     if (userId === NotUserId.ANONYMOUS) throw new ForbiddenException(`Invalid access_token`);
-    // TODO pw일 경우 GoogleSheet 업데이트
+
+    if (updateUserdata.password) await this.updatePasswordToGSS(userId, updateUserdata.password); // PW 업데이트일 경우 GSS도 업데이트
     return await this.usersRepository.update(userId, updateUserdata);
+  }
+
+  private async updatePasswordToGSS(userId: number, password: string) {
+    // TODO DB에서 userId로 부터 googleSheetId 불러오기
+    const user = await this.usersRepository.findOne(userId);
+    if (!user) throw new NotFoundException(`Not Found user_id ${userId}`);
+    const { googleSheetId } = user;
+    if (!googleSheetId) throw new NotFoundException(`Not Found googleSheetId user_id ${userId}`);
+    const tabName = 'member_info';
+    const range = `J${googleSheetId}`;
+    await this.gssService.writeValueFromSheet({
+      tabName: tabName,
+      range: range,
+      inputValue: password,
+    });
   }
 
   // TODO Cron
@@ -64,7 +80,7 @@ export class UserService {
         id: values[idx][6],
         password: change_password !== '' ? change_password : default_password,
       };
-      console.log('userInfo', userInfo);
+
       const isExist = await this.usersRepository.isExistGoogleSheetId(userInfo.googleSheetId);
 
       if (isExist) {
