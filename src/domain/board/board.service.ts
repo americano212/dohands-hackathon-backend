@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BoardsRepository } from './board.repository';
 import { GoogleSheetService } from 'src/common';
-import { BoardFromGSSDto } from './dto';
+import { BoardFromGSSDto, BoardResponseDto } from './dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
@@ -10,6 +10,20 @@ export class BoardService {
     private readonly boardsRepository: BoardsRepository,
     private readonly gssService: GoogleSheetService,
   ) {}
+
+  public async findAll(): Promise<BoardResponseDto[]> {
+    const boards = await this.boardsRepository.findAll();
+    const result: BoardResponseDto[] = [];
+    boards.forEach((board) => {
+      result.push({
+        boardId: board.boardId,
+        createdAt: board.createdAt,
+        title: board.title,
+        content: board.content,
+      });
+    });
+    return result;
+  }
 
   @Cron(CronExpression.EVERY_MINUTE)
   public async getContentsFromGSS(): Promise<boolean> {
@@ -31,6 +45,7 @@ export class BoardService {
       const isExist = await this.boardsRepository.isExistGoogleSheetId(board.googleSheetId);
 
       if (isExist) {
+        // ! 있었는데 아예 지워져버리는 경우는 제외됨(삭제 불가)
         // 이미 존재할 때는 글 내용만 업데이트
         await this.boardsRepository.updateByGoogleSheetId(board.googleSheetId, {
           title: board.title,

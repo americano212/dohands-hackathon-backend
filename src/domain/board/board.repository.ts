@@ -8,6 +8,11 @@ import { CreateBoardDto, UpdateBoardDto } from './dto';
 export class BoardsRepository {
   constructor(@InjectRepository(Board) private boardsRepository: Repository<Board>) {}
 
+  public async findAll(): Promise<Board[]> {
+    const boards = await this.boardsRepository.find();
+    return boards;
+  }
+
   public async create(createBoardData: CreateBoardDto): Promise<Board> {
     return await this.boardsRepository.save(await this.boardsRepository.create(createBoardData));
   }

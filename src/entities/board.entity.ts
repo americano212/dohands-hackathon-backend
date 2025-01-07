@@ -6,9 +6,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('board')
 export class Board extends CoreEntity {
-  @PrimaryGeneratedColumn({ type: 'int', unsigned: true, name: 'content_id' })
+  @PrimaryGeneratedColumn({ type: 'int', unsigned: true, name: 'board_id' })
   @IsInt()
-  public contentId!: number;
+  public boardId!: number;
 
   @ApiProperty({ example: '10', description: '구글 스프레드시트 index (행 번호)' })
   @Column({ type: 'varchar', nullable: true })
