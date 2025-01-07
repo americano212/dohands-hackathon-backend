@@ -6,6 +6,7 @@ import { RoleService } from '../role/providers';
 import { GiveRoleToUserDto, UserInfoFromGSSDto } from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GoogleSheetService, NotUserId } from 'src/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UserService {
@@ -53,8 +54,8 @@ export class UserService {
     });
   }
 
-  // TODO Cron
   // TODO transaction
+  @Cron(CronExpression.EVERY_MINUTE) // 1분마다 자동 실행
   public async getUserInfoFromGSS(): Promise<boolean> {
     const tabName = 'member_info';
     const range = 'B10:K20';
