@@ -4,7 +4,6 @@ import { IsInt, IsString, Length, MaxLength } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Exp } from './exp.entity';
-import { Board } from './board.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -13,7 +12,7 @@ export class User extends CoreEntity {
   @IsInt()
   public userId!: number;
 
-  @ApiProperty({ example: '10', description: 'google sheet address (행 번호)' })
+  @ApiProperty({ example: '10', description: '구글 스프레드시트 index (행 번호)' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsString()
@@ -91,9 +90,6 @@ export class User extends CoreEntity {
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
-
-  @OneToMany(() => Board, (board) => board.user)
-  public boards?: Board[];
 
   @OneToMany(() => Exp, (exp) => exp.user)
   public exps?: Exp[];

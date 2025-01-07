@@ -10,10 +10,10 @@ export class Board extends CoreEntity {
   @IsInt()
   public contentId!: number;
 
-  @ApiProperty({ example: 10, description: '구글 스프레드시트 index' })
-  @Column({ type: 'int', nullable: true })
-  @IsInt()
-  public googleSheetId?: number | null;
+  @ApiProperty({ example: '10', description: '구글 스프레드시트 index (행 번호)' })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public googleSheetId?: string | null;
 
   @ApiProperty({ example: 'Test Title 테스트 제목', description: '게시글 제목' })
   @Column({ type: 'varchar', nullable: false })
