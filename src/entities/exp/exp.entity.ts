@@ -14,13 +14,13 @@ export class Exp extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   @Max(30)
   @IsString()
-  public google_sheet_id?: string | null;
+  public googleSheetId?: string | null;
 
   @ApiProperty({ description: 'quest name' })
   @Column({ type: 'varchar', nullable: true })
   @Max(255)
   @IsString()
-  public quest_name?: string | null;
+  public questName?: string | null;
 
   @ApiProperty({ description: '획득한 경험치' })
   @Column({ type: 'int', nullable: false })
@@ -31,11 +31,11 @@ export class Exp extends CoreEntity {
   @Column({ type: 'varchar', nullable: false })
   @Max(30)
   @IsString()
-  public exp_type!: string;
+  public expType!: string;
 
   @ApiProperty({ example: new Date(), description: '경험치 획득 날짜' })
   @Column({ type: 'datetime', nullable: true })
-  public exp_dt?: Date | null;
+  public expDt?: Date | null;
 
   @ApiProperty({ example: "MAX", description: '달성 내용 ex)MAX, MEDIAN, S, A, B, C, D' })
   @Column({ type: 'varchar', nullable: true })
