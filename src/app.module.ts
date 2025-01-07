@@ -17,6 +17,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters';
 import { ErrorsInterceptor } from './common/interceptors';
 import { DomainModule } from './domain';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { DomainModule } from './domain';
     CommonModule,
     BaseModule,
     DomainModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
