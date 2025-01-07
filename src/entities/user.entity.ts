@@ -3,8 +3,8 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IsInt, IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
-import { Board } from './board';
-import { Exp } from './exp';
+import { Exp } from './exp.entity';
+import { Board } from './board.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -25,7 +25,6 @@ export class User extends CoreEntity {
   @IsNotEmpty()
   @IsString()
   public employeeId!: string;
-
 
   @ApiProperty({ example: '홍길동' })
   @Column({ type: 'varchar', nullable: true })
@@ -61,13 +60,16 @@ export class User extends CoreEntity {
   @IsInt()
   public jobGroup!: number | null;
 
-  @ApiProperty({ example: 'F', description: '레벨 분류용 직군 (F현장직군, B관리직군, G성장전략, T기술직군)' })
+  @ApiProperty({
+    example: 'F',
+    description: '레벨 분류용 직군 (F현장직군, B관리직군, G성장전략, T기술직군)',
+  })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsNotEmpty()
   @IsString()
   public jobFamily!: string | null;
-  
+
   @ApiProperty({ description: 'JWT Token' })
   @Column({ type: 'text', nullable: true, select: false })
   @IsString()

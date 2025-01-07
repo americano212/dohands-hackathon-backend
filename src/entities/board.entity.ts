@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-import { User, CoreEntity } from '..';
+import { User, CoreEntity } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('Board')
