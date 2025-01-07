@@ -1,35 +1,35 @@
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+
+import { User, CoreEntity } from '..';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IsInt, IsNotEmpty, IsString, Max } from 'class-validator';
 
-import { CoreEntity } from '..';
-import { Content } from '.';
-
-@Entity('board')
+@Entity('Board')
 export class Board extends CoreEntity {
   @PrimaryGeneratedColumn({ type: 'int', unsigned: true, name: 'board_id' })
   @IsInt()
-  public boardId!: number;
+  public contentId!: number;
 
-  @ApiProperty({ example: 'Admin Board' })
-  @Column({ type: 'varchar', nullable: false, unique: true })
-  @Max(20)
+  @ApiProperty({ example: 10, description: '구글 스프레드시트 index' })
+  @Column({ type: 'int', nullable: true })
+  @IsInt()
+  public googleSheetId?: number | null;
+
+  @ApiProperty({ example: 'Test Title' })
+  @Column({ type: 'varchar', nullable: false })
+  @IsNotEmpty()
+  @MaxLength(255)
+  @IsString()
+  public title!: string;
+
+  @ApiProperty({ example: 'Test Content' })
+  @Column({ type: 'text', nullable: false })
   @IsNotEmpty()
   @IsString()
-  public boardName!: string;
+  public content!: string;
 
-  @ApiProperty({ example: ['SuperAdmin'] })
-  @Column({ type: 'json', nullable: false })
-  @IsNotEmpty()
-  @IsString({ each: true })
-  public boardReadRoles!: string[];
-
-  @ApiProperty({ example: ['SuperAdmin'] })
-  @Column({ type: 'json', nullable: false })
-  @IsNotEmpty()
-  @IsString({ each: true })
-  public boardWriteRoles!: string[];
-
-  @OneToMany(() => Content, (content) => content.board)
-  public contents?: Content[];
+  @ApiProperty({ type: () => User })
+  @ManyToOne(() => User, (user) => user.boards, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
 }
