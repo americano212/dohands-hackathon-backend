@@ -12,6 +12,7 @@ export class UserInfoFromGSSDto extends PickType(User, [
   'jobLevel',
   'id',
   'password',
+  'totalExpLastYear',
 ] as const) {
   @ApiProperty({ example: '10', description: 'google sheet address' })
   public override googleSheetId!: string;

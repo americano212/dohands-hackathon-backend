@@ -1,7 +1,12 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { GiveRoleToUserDto, UpdateUserFCMDto, UpdateUserPasswordDto } from './dto';
+import {
+  GetUserInfoResponseDto,
+  GiveRoleToUserDto,
+  UpdateUserFCMDto,
+  UpdateUserPasswordDto,
+} from './dto';
 import { UserService } from './user.service';
 import { SuccessResponseDto } from 'src/common/dto';
 import { Role, Roles, UserId } from 'src/common';
@@ -11,14 +16,16 @@ import { Role, Roles, UserId } from 'src/common';
 export class UserController {
   constructor(private readonly user: UserService) {}
 
-  @Roles(Role.SuperAdmin)
-  @Post('role')
-  public async giveRoleToUser(@Body() data: GiveRoleToUserDto): Promise<SuccessResponseDto> {
-    return { isSuccess: await this.user.giveRole(data) };
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '유저(본인) 정보 불러오기' })
+  @ApiResponse({ type: GetUserInfoResponseDto })
+  @Get()
+  public async getUserInfo(@UserId() userId: number): Promise<GetUserInfoResponseDto> {
+    return await this.user.getUserInfo(userId);
   }
 
   @ApiBearerAuth() // JWT Token이 Header에 필수임의 의미(좌측 좌물쇠 표시)
-  @ApiOperation({ summary: '유저의 PW 업데이트' })
+  @ApiOperation({ summary: '유저(본인)의 PW 업데이트' })
   @ApiBody({ type: UpdateUserPasswordDto })
   @ApiResponse({ type: SuccessResponseDto })
   @Patch('password')
@@ -30,7 +37,7 @@ export class UserController {
   }
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: '유저의 FCM 업데이트' })
+  @ApiOperation({ summary: '유저(본인)의 FCM 토큰 업데이트' })
   @ApiBody({ type: UpdateUserFCMDto })
   @ApiResponse({ type: SuccessResponseDto })
   @Patch('fcm_token')
@@ -45,5 +52,11 @@ export class UserController {
   @Get('/gss')
   public async forceRefreshGetUserInfoFromGSS(): Promise<SuccessResponseDto> {
     return { isSuccess: await this.user.getUserInfoFromGSS() };
+  }
+
+  @Roles(Role.SuperAdmin)
+  @Post('role')
+  public async giveRoleToUser(@Body() data: GiveRoleToUserDto): Promise<SuccessResponseDto> {
+    return { isSuccess: await this.user.giveRole(data) };
   }
 }

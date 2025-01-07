@@ -41,7 +41,7 @@ export class User extends CoreEntity {
   @IsString()
   public password?: string | null;
 
-  @ApiProperty({ example: '2025.01.01', description: '입사일' })
+  @ApiProperty({ example: '2025-01-01', description: '입사일' })
   @Column({ type: 'date', nullable: true })
   public hireDate?: Date | null;
 
@@ -73,6 +73,11 @@ export class User extends CoreEntity {
   @MaxLength(30)
   @IsString()
   public jobLevel!: string | null;
+
+  @ApiProperty({ example: 10000, description: '작년까지 획득한 총경험치 양' })
+  @Column({ type: 'int', nullable: false, default: 0 })
+  @IsInt()
+  public totalExpLastYear!: number;
 
   @ApiProperty({ description: 'JWT Token' })
   @Column({ type: 'text', nullable: true, select: false })
