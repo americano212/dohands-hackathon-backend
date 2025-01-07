@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BoardsRepository } from './board.repository';
 import { GoogleSheetService } from 'src/common';
 import { BoardFromGSSDto } from './dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class BoardService {
@@ -10,6 +11,7 @@ export class BoardService {
     private readonly gssService: GoogleSheetService,
   ) {}
 
+  @Cron(CronExpression.EVERY_MINUTE)
   public async getContentsFromGSS(): Promise<boolean> {
     const tabName = 'notice_board';
     const range = 'C7:D100'; // TODO 레거시
