@@ -6,6 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('board')
 export class Board extends CoreEntity {
+  @ApiProperty({ example: 1, description: 'Board 식별 ID' })
   @PrimaryGeneratedColumn({ type: 'int', unsigned: true, name: 'board_id' })
   @IsInt()
   public boardId!: number;

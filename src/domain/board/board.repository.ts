@@ -3,14 +3,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateBoardDto, UpdateBoardDto } from './dto';
+import { NullableType } from 'src/common/types';
 
 @Injectable()
 export class BoardsRepository {
   constructor(@InjectRepository(Board) private boardsRepository: Repository<Board>) {}
 
   public async findAll(): Promise<Board[]> {
-    const boards = await this.boardsRepository.find();
-    return boards;
+    return await this.boardsRepository.find();
+  }
+
+  public async findOne(boardId: number): Promise<NullableType<Board>> {
+    return await this.boardsRepository.findOne({
+      where: { boardId },
+    });
   }
 
   public async create(createBoardData: CreateBoardDto): Promise<Board> {

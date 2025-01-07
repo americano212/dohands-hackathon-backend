@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BoardsRepository } from './board.repository';
 import { GoogleSheetService } from 'src/common';
 import { BoardFromGSSDto, BoardResponseDto } from './dto';
@@ -22,6 +22,19 @@ export class BoardService {
         content: board.content,
       });
     });
+    return result;
+  }
+
+  public async findOne(boardId: number): Promise<BoardResponseDto> {
+    const board = await this.boardsRepository.findOne(boardId);
+    if (!board) throw new NotFoundException(`Board ID ${boardId} Not Found`);
+
+    const result: BoardResponseDto = {
+      boardId: board.boardId,
+      createdAt: board.createdAt,
+      title: board.title,
+      content: board.content,
+    };
     return result;
   }
 
