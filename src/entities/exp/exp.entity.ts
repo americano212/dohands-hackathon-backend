@@ -27,7 +27,7 @@ export class Exp extends CoreEntity {
   @IsInt()
   public exp!: number;
 
-  @ApiProperty({ example: "J(직무별), H1(상반기 인사평가), H2(하반기 인사평가), L(리더부여), C(전사)",description: 'exp type' })
+  @ApiProperty({ example: "J",description: 'exp type ex)J(직무별), H1(상반기 인사평가), H2(하반기 인사평가), L(리더부여), C(전사)' })
   @Column({ type: 'varchar', nullable: false })
   @Max(30)
   @IsString()
@@ -37,13 +37,13 @@ export class Exp extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   public exp_dt?: Date | null;
 
-  @ApiProperty({ example: "MAX, MEDIAN, S, A, B, C, D", description: '달성 내용' })
+  @ApiProperty({ example: "MAX", description: '달성 내용 ex)MAX, MEDIAN, S, A, B, C, D' })
   @Column({ type: 'varchar', nullable: true })
   @Max(30)
   @IsString()
   public result?: string | null;
 
-  @ApiProperty({ description: '주차 (1~52)' })
+  @ApiProperty({ example: 1, description: '주차 (1~52)' })
   @Column({ type: 'int', nullable: true })
   @IsInt()
   public week?: number | null;
