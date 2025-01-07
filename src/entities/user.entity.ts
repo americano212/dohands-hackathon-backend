@@ -4,6 +4,7 @@ import { IsInt, IsNotEmpty, IsString, Length } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Content } from './board';
+import { Exp } from './exp';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -43,6 +44,9 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Content, (content) => content.user)
   public contents?: Content[];
+
+  @OneToMany(() => Exp, (exp) => exp.user)
+  public exps?: Exp[];
 
   constructor(userId?: number) {
     super();
