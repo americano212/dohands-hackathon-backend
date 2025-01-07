@@ -3,7 +3,7 @@ import { Transactional } from 'typeorm-transactional';
 
 import { UsersRepository } from './user.repository';
 import { RoleService } from '../role/providers';
-import { GiveRoleToUserDto, UserInfoFromGSSDto } from './dto';
+import { GetUserInfoResponseDto, GiveRoleToUserDto, UserInfoFromGSSDto } from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GoogleSheetService, NotUserId } from 'src/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -15,6 +15,24 @@ export class UserService {
     private readonly role: RoleService,
     private readonly gssService: GoogleSheetService,
   ) {}
+
+  public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
+    if (userId === NotUserId.ANONYMOUS) throw new ForbiddenException(`Invalid access_token`);
+
+    const user = await this.usersRepository.findOne(userId);
+    if (!user) throw new NotFoundException(`User ID ${userId} NOT Found`);
+    const userInfo: GetUserInfoResponseDto = {
+      employeeId: user.employeeId,
+      username: user.username,
+      hireDate: user.hireDate,
+      department: user.department,
+      jobGroup: user.jobGroup,
+      jobFamily: user.jobFamily,
+      jobLevel: user.jobLevel,
+      totalExpLastYear: user.totalExpLastYear,
+    };
+    return userInfo;
+  }
 
   @Transactional()
   public async giveRole(giveRoleData: GiveRoleToUserDto): Promise<boolean> {
@@ -80,6 +98,7 @@ export class UserService {
         jobLevel: values[idx][5],
         id: values[idx][6],
         password: change_password !== '' ? change_password : default_password,
+        totalExpLastYear: Number(values[idx][9].replace(/,/g, '')),
       };
 
       const isExist = await this.usersRepository.isExistGoogleSheetId(userInfo.googleSheetId);
