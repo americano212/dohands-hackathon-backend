@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { GiveRoleToUserDto, UpdateUserFCMDto, UpdateUserPasswordDto } from './dto';
@@ -39,5 +39,11 @@ export class UserController {
     @Body() updateUserdata: UpdateUserFCMDto,
   ): Promise<SuccessResponseDto> {
     return { isSuccess: await this.user.update(userId, updateUserdata) };
+  }
+
+  @ApiOperation({ summary: '구글 스프레드 시트로 부터 유저정보 강제 갱신(새로고침)' })
+  @Get('/gss')
+  public async forceRefreshGetUserInfoFromGSS(): Promise<SuccessResponseDto> {
+    return { isSuccess: await this.user.getUserInfoFromGSS() };
   }
 }

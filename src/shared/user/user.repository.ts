@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { User } from '#entities/user.entity';
 
-import { CreateUserDto } from './dto';
+import { CreateUserDto, UserInfoFromGSSDto } from './dto';
 import { NullableType } from 'src/common/types';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -45,6 +45,10 @@ export class UsersRepository {
     return await this.usersRepository.exists({ where: { id: id } });
   }
 
+  public async isExistGoogleSheetId(googleSheetId: string): Promise<boolean> {
+    return await this.usersRepository.exists({ where: { googleSheetId: googleSheetId } });
+  }
+
   public async setRefreshToken(userId: number, token: string): Promise<boolean> {
     const result = await this.usersRepository.update({ userId: userId }, { refreshToken: token });
     return result.affected ? true : false;
@@ -52,6 +56,18 @@ export class UsersRepository {
 
   public async update(userId: number, updateUserdata: UpdateUserDto): Promise<boolean> {
     const result = await this.usersRepository.update({ userId }, updateUserdata);
+    return result.affected ? true : false;
+  }
+
+  public async createFromGSS(userInfo: UserInfoFromGSSDto): Promise<User> {
+    return await this.usersRepository.save(await this.usersRepository.create(userInfo));
+  }
+
+  public async updateByGoogleSheetId(userInfo: UserInfoFromGSSDto): Promise<boolean> {
+    const result = await this.usersRepository.update(
+      { googleSheetId: userInfo.googleSheetId },
+      userInfo,
+    );
     return result.affected ? true : false;
   }
 }

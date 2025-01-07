@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { IsInt, IsString, MaxLength } from 'class-validator';
 
-import { User, CoreEntity } from '..';
+import { User, CoreEntity } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('exp')
@@ -26,7 +26,11 @@ export class Exp extends CoreEntity {
   @IsInt()
   public exp!: number;
 
-  @ApiProperty({ example: "J",description: 'exp type ex)J(직무별), H1(상반기 인사평가), H2(하반기 인사평가), L(리더부여), C(전사)' })
+  @ApiProperty({
+    example: 'J',
+    description:
+      'exp type ex)J(직무별), H1(상반기 인사평가), H2(하반기 인사평가), L(리더부여), C(전사)',
+  })
   @Column({ type: 'varchar', nullable: false })
   @MaxLength(30)
   @IsString()
@@ -36,7 +40,7 @@ export class Exp extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   public expAt?: Date | null;
 
-  @ApiProperty({ example: "MAX", description: '달성 내용 ex)MAX, MEDIAN, S, A, B, C, D' })
+  @ApiProperty({ example: 'MAX', description: '달성 내용 ex)MAX, MEDIAN, S, A, B, C, D' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsString()
@@ -56,5 +60,4 @@ export class Exp extends CoreEntity {
   @ManyToOne(() => User, (user) => user.exps, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user!: User;
-
 }

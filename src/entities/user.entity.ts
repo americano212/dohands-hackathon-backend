@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { IsInt, IsNotEmpty, IsString, Length, MaxLength } from 'class-validator';
+import { IsInt, IsString, Length, MaxLength } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
-import { Board } from './board';
-import { Exp } from './exp';
+import { Exp } from './exp.entity';
+import { Board } from './board.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -13,7 +13,7 @@ export class User extends CoreEntity {
   @IsInt()
   public userId!: number;
 
-  @ApiProperty({ example: 'E10', description: 'google sheet address' })
+  @ApiProperty({ example: '10', description: 'google sheet address (행 번호)' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsString()
@@ -22,10 +22,8 @@ export class User extends CoreEntity {
   @ApiProperty({ example: '2025010101', description: '사원번호 (입사일+번호)' })
   @Column({ type: 'varchar', nullable: false, unique: true, default: 'DEFAULT_EMPLOYEE_ID' })
   @MaxLength(30)
-  @IsNotEmpty()
   @IsString()
   public employeeId!: string;
-
 
   @ApiProperty({ example: '홍길동' })
   @Column({ type: 'varchar', nullable: true })
@@ -35,7 +33,6 @@ export class User extends CoreEntity {
 
   @ApiProperty({ example: 'minsukim', description: '로그인을 위한 ID' })
   @Column({ type: 'varchar', nullable: false, unique: true })
-  @IsNotEmpty()
   @IsString()
   public id!: string;
 
@@ -51,23 +48,32 @@ export class User extends CoreEntity {
   @ApiProperty({ example: '음성 1센터', description: '소속' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
-  @IsNotEmpty()
   @IsString()
   public department?: string | null;
 
   @ApiProperty({ example: '1', description: '직무 그룹 (1/2)' })
   @Column({ type: 'int', nullable: true })
-  @IsNotEmpty()
   @IsInt()
-  public jobGroup!: number | null;
+  public jobGroup?: number | null;
 
-  @ApiProperty({ example: 'F', description: '레벨 분류용 직군 (F현장직군, B관리직군, G성장전략, T기술직군)' })
+  @ApiProperty({
+    example: 'F',
+    description: '레벨 분류용 직군 (F현장직군, B관리직군, G성장전략, T기술직군)',
+  })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
-  @IsNotEmpty()
   @IsString()
   public jobFamily!: string | null;
-  
+
+  @ApiProperty({
+    example: 'F1 - I',
+    description: '레벨',
+  })
+  @Column({ type: 'varchar', nullable: true })
+  @MaxLength(30)
+  @IsString()
+  public jobLevel!: string | null;
+
   @ApiProperty({ description: 'JWT Token' })
   @Column({ type: 'text', nullable: true, select: false })
   @IsString()
