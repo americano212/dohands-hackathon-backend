@@ -4,7 +4,7 @@ import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { CoreEntity } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity('Board')
+@Entity('board')
 export class Board extends CoreEntity {
   @PrimaryGeneratedColumn({ type: 'int', unsigned: true, name: 'content_id' })
   @IsInt()
