@@ -37,7 +37,7 @@ export class UserService {
       totalExpLastYear: user.totalExpLastYear,
       profileImageCode: user.profileImageCode,
       profileBadgeCode: user.profileBadgeCode,
-      possibleBadgeCodeList: user.possibleBadgeCodeList,
+      possibleBadgeCodeList: !user.possibleBadgeCodeList ? [] : user.possibleBadgeCodeList,
     };
     return userInfo;
   }
