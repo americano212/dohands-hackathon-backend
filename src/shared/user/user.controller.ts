@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import {
-  GetUserInfoResponseDto,
-  GiveRoleToUserDto,
-  UpdateUserFCMDto,
-  UpdateUserPasswordDto,
-} from './dto';
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { GetUserInfoResponseDto, GiveRoleToUserDto, UpdateUserDto } from './dto';
 import { UserService } from './user.service';
 import { SuccessResponseDto } from 'src/common/dto';
 import { Role, Roles, UserId } from 'src/common';
@@ -24,28 +26,30 @@ export class UserController {
     return await this.user.getUserInfo(userId);
   }
 
-  @ApiBearerAuth() // JWT Token이 Header에 필수임의 의미(좌측 좌물쇠 표시)
-  @ApiOperation({ summary: '유저(본인)의 PW 업데이트' })
-  @ApiBody({ type: UpdateUserPasswordDto })
-  @ApiResponse({ type: SuccessResponseDto })
-  @Patch('password')
-  public async updatePassword(
-    @UserId() userId: number,
-    @Body() updateUserdata: UpdateUserPasswordDto,
-  ): Promise<SuccessResponseDto> {
-    return { isSuccess: await this.user.update(userId, updateUserdata) };
-  }
-
   @ApiBearerAuth()
-  @ApiOperation({ summary: '유저(본인)의 FCM 토큰 업데이트' })
-  @ApiBody({ type: UpdateUserFCMDto })
+  @ApiOperation({
+    summary: '유저(본인)의 정보 업데이트 (PW, FCM Token, Profile 이미지(캐릭터), Profile Badge)',
+  })
+  @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ type: SuccessResponseDto })
-  @Patch('fcm_token')
-  public async updateFCMToken(
+  @ApiParam({
+    name: 'field',
+    description: '업데이트할 대상 지정',
+    examples: {
+      password: { summary: '비밀번호 업데이트', value: 'password' },
+      fcmToken: { summary: 'FCM 디바이스 토큰 업데이트', value: 'fcm_token' },
+      profileImageCode: { summary: '프로필 이미지(캐릭터) 업데이트', value: 'profile_image_code' },
+      profileBadgeCode: { summary: '대표 Badge 업데이트', value: 'profile_badge_code' },
+    },
+  })
+  @Patch(':field')
+  public async updateUserInfo(
     @UserId() userId: number,
-    @Body() updateUserdata: UpdateUserFCMDto,
+    @Param('field') field: string,
+    @Body() updateData: UpdateUserDto,
   ): Promise<SuccessResponseDto> {
-    return { isSuccess: await this.user.update(userId, updateUserdata) };
+    const isSuccess = await this.user.updateField(userId, field, updateData);
+    return { isSuccess };
   }
 
   @ApiOperation({ summary: '구글 스프레드 시트로 부터 유저정보 강제 갱신(새로고침)' })

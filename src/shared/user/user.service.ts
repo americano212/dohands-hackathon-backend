@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Transactional } from 'typeorm-transactional';
 
 import { UsersRepository } from './user.repository';
@@ -30,6 +35,9 @@ export class UserService {
       jobFamily: user.jobFamily,
       jobLevel: user.jobLevel,
       totalExpLastYear: user.totalExpLastYear,
+      profileImageCode: user.profileImageCode,
+      profileBadgeCode: user.profileBadgeCode,
+      possibleBadgeCodeList: !user.possibleBadgeCodeList ? [] : user.possibleBadgeCodeList,
     };
     return userInfo;
   }
@@ -50,11 +58,47 @@ export class UserService {
     return await this.usersRepository.isExistId(id);
   }
 
-  public async update(userId: number, updateUserdata: UpdateUserDto): Promise<boolean> {
+  public async updateField(
+    userId: number,
+    field: string,
+    updateData: UpdateUserDto,
+  ): Promise<boolean> {
     if (userId === NotUserId.ANONYMOUS) throw new ForbiddenException(`Invalid access_token`);
+    switch (field) {
+      case 'password':
+        if (!updateData.password) throw new BadRequestException(`BAD REQUEST require password`);
+        return this.updatePassword(userId, updateData.password);
+      case 'fcm_token':
+        if (!updateData.fcmToken) throw new BadRequestException(`BAD REQUEST require fcmToken`);
+        return this.updateFcmToken(userId, updateData.fcmToken);
+      case 'profile_image_code':
+        if (!updateData.profileImageCode)
+          throw new BadRequestException(`BAD REQUEST require profileImageCode`);
+        return this.updateProfileImageCode(userId, updateData.profileImageCode);
+      case 'profile_badge_code':
+        if (!updateData.profileBadgeCode)
+          throw new BadRequestException(`BAD REQUEST require profileBadgeCode`);
+        return this.updateProfileBadgeCode(userId, updateData.profileBadgeCode);
+      default:
+        throw new BadRequestException('Invalid field');
+    }
+  }
 
-    if (updateUserdata.password) await this.updatePasswordToGSS(userId, updateUserdata.password); // PW 업데이트일 경우 GSS도 업데이트
-    return await this.usersRepository.update(userId, updateUserdata);
+  private async updatePassword(userId: number, password: string): Promise<boolean> {
+    await this.updatePasswordToGSS(userId, password); // PW 업데이트일 경우 GSS도 업데이트
+    return await this.usersRepository.update(userId, { password });
+  }
+
+  private async updateFcmToken(userId: number, fcmToken: string): Promise<boolean> {
+    return await this.usersRepository.update(userId, { fcmToken });
+  }
+
+  private async updateProfileImageCode(userId: number, profileImageCode: string): Promise<boolean> {
+    return await this.usersRepository.update(userId, { profileImageCode });
+  }
+
+  private async updateProfileBadgeCode(userId: number, profileBadgeCode: string): Promise<boolean> {
+    return await this.usersRepository.update(userId, { profileBadgeCode });
   }
 
   private async updatePasswordToGSS(userId: number, password: string) {

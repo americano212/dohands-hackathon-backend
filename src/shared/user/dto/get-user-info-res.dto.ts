@@ -10,4 +10,7 @@ export class GetUserInfoResponseDto extends PickType(User, [
   'jobFamily',
   'jobLevel',
   'totalExpLastYear',
+  'profileImageCode',
+  'profileBadgeCode',
+  'possibleBadgeCodeList',
 ] as const) {}
