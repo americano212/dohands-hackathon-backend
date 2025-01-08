@@ -91,7 +91,7 @@ export class User extends CoreEntity {
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
 
-  @OneToMany(() => Exp, (exp) => exp.user)
+  @OneToMany(() => Exp, (exp) => exp.userId)
   public exps?: Exp[];
 
   constructor(userId?: number) {

@@ -40,7 +40,10 @@ export class Exp extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   public expAt?: Date | null;
 
-  @ApiProperty({ example: 'MAX', description: '달성 내용 ex)MAX, MEDIAN, S, A, B, C, D' })
+  @ApiProperty({
+    example: 'MAX',
+    description: '달성 내용 ex)MAX, MEDIAN, S등급, A등급, B등급, C등급, D등급',
+  })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsString()
@@ -59,5 +62,5 @@ export class Exp extends CoreEntity {
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.exps, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  user!: User;
+  userId!: User;
 }
