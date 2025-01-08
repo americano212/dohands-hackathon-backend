@@ -66,13 +66,19 @@ export class UserService {
     if (userId === NotUserId.ANONYMOUS) throw new ForbiddenException(`Invalid access_token`);
     switch (field) {
       case 'password':
-        if (!updateData.password)
-          throw new BadRequestException(`BAD REQUEST require password when using password field`);
+        if (!updateData.password) throw new BadRequestException(`BAD REQUEST require password`);
         return this.updatePassword(userId, updateData.password);
       case 'fcm_token':
-        if (!updateData.fcmToken)
-          throw new BadRequestException(`BAD REQUEST require fcmToken when using fcmToken field`);
+        if (!updateData.fcmToken) throw new BadRequestException(`BAD REQUEST require fcmToken`);
         return this.updateFcmToken(userId, updateData.fcmToken);
+      case 'profile_image_code':
+        if (!updateData.profileImageCode)
+          throw new BadRequestException(`BAD REQUEST require profileImageCode`);
+        return this.updateProfileImageCode(userId, updateData.profileImageCode);
+      case 'profile_badge_code':
+        if (!updateData.profileBadgeCode)
+          throw new BadRequestException(`BAD REQUEST require profileBadgeCode`);
+        return this.updateProfileBadgeCode(userId, updateData.profileBadgeCode);
       default:
         throw new BadRequestException('Invalid field');
     }
@@ -85,6 +91,14 @@ export class UserService {
 
   private async updateFcmToken(userId: number, fcmToken: string): Promise<boolean> {
     return await this.usersRepository.update(userId, { fcmToken });
+  }
+
+  private async updateProfileImageCode(userId: number, profileImageCode: string): Promise<boolean> {
+    return await this.usersRepository.update(userId, { profileImageCode });
+  }
+
+  private async updateProfileBadgeCode(userId: number, profileBadgeCode: string): Promise<boolean> {
+    return await this.usersRepository.update(userId, { profileBadgeCode });
   }
 
   private async updatePasswordToGSS(userId: number, password: string) {
