@@ -94,12 +94,12 @@ export class User extends CoreEntity {
   public profileImageCode?: string | null;
 
   @ApiProperty({ example: 'A', description: '프로필 badge 식별자' })
-  @Column('varchar', { nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   public profileBadgeCode?: string | null;
 
   @ApiProperty({ example: ['A', 'B'], description: '사용할 수 있는 badge 리스트' })
-  @Column('simple-array', { nullable: false, default: [] })
-  public possibleBadgeCodeList!: string[];
+  @Column({ type: 'json', nullable: true })
+  public possibleBadgeCodeList?: string[] | null;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
