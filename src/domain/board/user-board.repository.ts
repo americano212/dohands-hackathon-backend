@@ -14,4 +14,10 @@ export class UserBoardsRepository {
     const userBoard: CreateUserBoardDto = { user, board, isRead: true };
     return await this.userBoardsRepository.save(await this.userBoardsRepository.create(userBoard));
   }
+
+  public async isExist(userId: number, boardId: number): Promise<boolean> {
+    return await this.userBoardsRepository.exists({
+      where: { user: { userId }, board: { boardId } },
+    });
+  }
 }

@@ -41,9 +41,11 @@ export class BoardService {
 
   @Transactional()
   public async setBoardRead(userId: number, boardId: number): Promise<boolean> {
+    const isAlreadyRead = await this.userBoardsRepository.isExist(userId, boardId);
+    if (isAlreadyRead) return true; // 이미 읽은 경우 판정
+
     const user = await this.user.findOne(userId);
     const board = await this.findOne(boardId);
-    // TODO 이미 있는거 판정
     const result = await this.userBoardsRepository.setIsReadTrue(user, board);
     return result ? true : false;
   }
