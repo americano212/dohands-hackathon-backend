@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from 'src/shared/user/user.service';
-import { SendNoticeDto } from './dto';
+import { GetNoticeDto, GetNoticeListDto, SendNoticeDto } from './dto';
 import { AppPushService } from 'src/common';
 import { NoticeRepository } from './notice.repository';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class NoticeService {
@@ -12,7 +13,7 @@ export class NoticeService {
     private readonly noticesRepository: NoticeRepository,
   ) {}
 
-  async sendNotice(sendNoticeData: SendNoticeDto) {
+  public async sendNotice(sendNoticeData: SendNoticeDto): Promise<boolean> {
     // UserID로 부터 토큰 추출
     const userFcmTokenList: string[] = [];
 
@@ -51,5 +52,18 @@ export class NoticeService {
         user: user,
       });
     });
+    return true;
+  }
+
+  @Transactional()
+  public async noticeListByUserId(userId: number): Promise<GetNoticeListDto> {
+    const user = await this.user.findOne(userId);
+    const results = await this.noticesRepository.findAllByUserId(user.userId);
+    const noticeList: GetNoticeDto[] = [];
+    results.forEach((result) => {
+      const { title, body, createdAt } = result;
+      noticeList.push({ title, body, createdAt });
+    });
+    return { noticeList: noticeList };
   }
 }

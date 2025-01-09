@@ -1,10 +1,8 @@
-import { Notice } from '#entities/notice.entity';
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { SuccessResponseDto } from 'src/common/dto';
+import { Notification } from 'src/shared/notice/providers/dto';
 
 export type FcmToken = string;
-
-export class Notification extends PickType(Notice, ['title', 'body'] as const) {}
 
 export class AppPushMessageDto {
   @ApiProperty({ example: ['<FCM registration token>'], description: '디바이스 토큰' })

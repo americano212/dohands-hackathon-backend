@@ -11,4 +11,11 @@ export class NoticeRepository {
   public async create(noticeData: CreateNoticeDto): Promise<Notice> {
     return await this.noticesRepository.save(await this.noticesRepository.create(noticeData));
   }
+
+  public async findAllByUserId(userId: number): Promise<Notice[]> {
+    return await this.noticesRepository.find({
+      relations: { user: true },
+      where: { user: { userId: userId } },
+    });
+  }
 }
