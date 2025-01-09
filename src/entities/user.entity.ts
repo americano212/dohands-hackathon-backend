@@ -4,6 +4,7 @@ import { IsInt, IsString, Length, MaxLength } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Exp } from './exp.entity';
+import { Notice } from './notice.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -97,6 +98,7 @@ export class User extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   public profileBadgeCode?: string | null;
 
+  // ! 최대 5개라해서 정규화 안하는게 나을듯
   @ApiProperty({ example: ['A', 'B'], description: '사용할 수 있는 badge 리스트' })
   @Column({ type: 'json', nullable: true })
   public possibleBadgeCodeList?: string[] | null;
@@ -106,6 +108,9 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Exp, (exp) => exp.user)
   public exps?: Exp[];
+
+  @OneToMany(() => Notice, (notice) => notice.user)
+  public notices?: Notice[];
 
   constructor(userId?: number) {
     super();
