@@ -1,15 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SuccessResponseDto } from 'src/common/dto';
+import { Notification } from 'src/shared/notice/providers/dto';
 
 export type FcmToken = string;
-
-export class Notification {
-  @ApiProperty({ example: 'message title', description: '메시지 제목' })
-  public title!: string;
-
-  @ApiProperty({ example: 'message body', description: '메시지 본문' })
-  public body!: string;
-}
 
 export class AppPushMessageDto {
   @ApiProperty({ example: ['<FCM registration token>'], description: '디바이스 토큰' })

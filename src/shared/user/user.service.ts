@@ -12,6 +12,7 @@ import { GetUserInfoResponseDto, GiveRoleToUserDto, UserInfoFromGSSDto } from '.
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GoogleSheetService, NotUserId } from 'src/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { User } from '#entities/index';
 
 @Injectable()
 export class UserService {
@@ -21,11 +22,15 @@ export class UserService {
     private readonly gssService: GoogleSheetService,
   ) {}
 
-  public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
+  public async findOne(userId: number): Promise<User> {
     if (userId === NotUserId.ANONYMOUS) throw new ForbiddenException(`Invalid access_token`);
-
     const user = await this.usersRepository.findOne(userId);
     if (!user) throw new NotFoundException(`User ID ${userId} NOT Found`);
+    return user;
+  }
+
+  public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
+    const user = await this.findOne(userId);
     const userInfo: GetUserInfoResponseDto = {
       employeeId: user.employeeId,
       username: user.username,
@@ -40,6 +45,13 @@ export class UserService {
       possibleBadgeCodeList: !user.possibleBadgeCodeList ? [] : user.possibleBadgeCodeList,
     };
     return userInfo;
+  }
+
+  public async getUserFcmToken(userId: number): Promise<string> {
+    const user = await this.findOne(userId);
+    const { fcmToken } = user;
+    if (!fcmToken) throw new NotFoundException(`User ID ${userId} don't have fcm token`);
+    return fcmToken;
   }
 
   @Transactional()
@@ -63,22 +75,22 @@ export class UserService {
     field: string,
     updateData: UpdateUserDto,
   ): Promise<boolean> {
-    if (userId === NotUserId.ANONYMOUS) throw new ForbiddenException(`Invalid access_token`);
+    const user = await this.findOne(userId);
     switch (field) {
       case 'password':
         if (!updateData.password) throw new BadRequestException(`BAD REQUEST require password`);
-        return this.updatePassword(userId, updateData.password);
+        return this.updatePassword(user.userId, updateData.password);
       case 'fcm_token':
         if (!updateData.fcmToken) throw new BadRequestException(`BAD REQUEST require fcmToken`);
-        return this.updateFcmToken(userId, updateData.fcmToken);
+        return this.updateFcmToken(user.userId, updateData.fcmToken);
       case 'profile_image_code':
         if (!updateData.profileImageCode)
           throw new BadRequestException(`BAD REQUEST require profileImageCode`);
-        return this.updateProfileImageCode(userId, updateData.profileImageCode);
+        return this.updateProfileImageCode(user.userId, updateData.profileImageCode);
       case 'profile_badge_code':
         if (!updateData.profileBadgeCode)
           throw new BadRequestException(`BAD REQUEST require profileBadgeCode`);
-        return this.updateProfileBadgeCode(userId, updateData.profileBadgeCode);
+        return this.updateProfileBadgeCode(user.userId, updateData.profileBadgeCode);
       default:
         throw new BadRequestException('Invalid field');
     }
@@ -102,9 +114,8 @@ export class UserService {
   }
 
   private async updatePasswordToGSS(userId: number, password: string) {
-    // TODO DB에서 userId로 부터 googleSheetId 불러오기
-    const user = await this.usersRepository.findOne(userId);
-    if (!user) throw new NotFoundException(`Not Found user_id ${userId}`);
+    // userId로 부터 googleSheetId 불러오기
+    const user = await this.findOne(userId);
     const { googleSheetId } = user;
     if (!googleSheetId) throw new NotFoundException(`Not Found googleSheetId user_id ${userId}`);
     const tabName = 'member_info';

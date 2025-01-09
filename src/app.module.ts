@@ -18,6 +18,7 @@ import { AllExceptionsFilter } from './common/filters';
 import { ErrorsInterceptor } from './common/interceptors';
 import { DomainModule } from './domain';
 import { ScheduleModule } from '@nestjs/schedule';
+import { NoticeModule } from './shared/notice/notice.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     BaseModule,
     DomainModule,
     ScheduleModule.forRoot(),
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [
