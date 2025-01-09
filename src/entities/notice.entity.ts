@@ -21,6 +21,8 @@ export class Notice extends CoreEntity {
   @IsString()
   public body!: string;
 
+  // ! 전송 성공 여부도 있으면 좋겠지만 시간상 스킵
+
   @ManyToOne(() => User, (user) => user.notices, { cascade: true })
   @JoinColumn({ name: 'user_id' })
   user?: User;
