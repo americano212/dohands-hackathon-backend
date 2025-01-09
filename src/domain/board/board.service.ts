@@ -17,8 +17,11 @@ export class BoardService {
     private readonly gssService: GoogleSheetService,
   ) {}
 
+  @Transactional()
   public async findAllByUserId(userId: number): Promise<BoardListResponseDto[]> {
-    const boards = await this.boardsRepository.findAllByUserId(userId);
+    const user = await this.user.findOne(userId);
+    const boards = await this.boardsRepository.findAllByUserId(user.userId);
+
     const result: BoardListResponseDto[] = [];
     boards.forEach((board) => {
       if (!board.userBoards) board.userBoards = [];
