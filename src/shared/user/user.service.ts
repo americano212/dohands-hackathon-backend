@@ -151,6 +151,7 @@ export class UserService {
         jobGroup: Number(values[idx][4]),
         jobFamily: values[idx][5][0],
         jobLevel: values[idx][5],
+        profileImageCode: `${values[idx][5][0]}_B`,
         id: values[idx][6],
         password: change_password !== '' ? change_password : default_password,
         totalExpLastYear: Number(values[idx][9].replace(/,/g, '')),

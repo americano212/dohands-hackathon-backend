@@ -1,41 +1,56 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BoardsRepository } from './board.repository';
 import { GoogleSheetService } from 'src/common';
-import { BoardFromGSSDto, BoardResponseDto } from './dto';
+import { BoardFromGSSDto, BoardListResponseDto } from './dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { UserService } from 'src/shared/user/user.service';
+import { UserBoardsRepository } from './user-board.repository';
+import { Board } from '#entities/board.entity';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class BoardService {
   constructor(
     private readonly boardsRepository: BoardsRepository,
+    private readonly userBoardsRepository: UserBoardsRepository,
+    private readonly user: UserService,
     private readonly gssService: GoogleSheetService,
   ) {}
 
-  public async findAll(): Promise<BoardResponseDto[]> {
-    const boards = await this.boardsRepository.findAll();
-    const result: BoardResponseDto[] = [];
+  @Transactional()
+  public async findAllByUserId(userId: number): Promise<BoardListResponseDto[]> {
+    const user = await this.user.findOne(userId);
+    const boards = await this.boardsRepository.findAllByUserId(user.userId);
+
+    const result: BoardListResponseDto[] = [];
     boards.forEach((board) => {
+      if (!board.userBoards) board.userBoards = [];
       result.push({
         boardId: board.boardId,
         createdAt: board.createdAt,
         title: board.title,
         content: board.content,
+        isRead: board.userBoards.length !== 0 ? true : false,
       });
     });
     return result;
   }
 
-  public async findOne(boardId: number): Promise<BoardResponseDto> {
+  public async findOne(boardId: number): Promise<Board> {
     const board = await this.boardsRepository.findOne(boardId);
     if (!board) throw new NotFoundException(`Board ID ${boardId} Not Found`);
+    return board;
+  }
 
-    const result: BoardResponseDto = {
-      boardId: board.boardId,
-      createdAt: board.createdAt,
-      title: board.title,
-      content: board.content,
-    };
-    return result;
+  @Transactional()
+  public async setBoardRead(userId: number, boardId: number): Promise<boolean> {
+    const isAlreadyRead = await this.userBoardsRepository.isExist(userId, boardId);
+    if (isAlreadyRead) return true; // 이미 읽은 경우 판정
+
+    const user = await this.user.findOne(userId);
+    const board = await this.findOne(boardId);
+    const result = await this.userBoardsRepository.setIsReadTrue(user, board);
+    return result ? true : false;
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
