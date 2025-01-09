@@ -5,6 +5,7 @@ import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Exp } from './exp.entity';
 import { Notice } from './notice.entity';
+import { UserBoard } from './user-board.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -105,6 +106,9 @@ export class User extends CoreEntity {
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
+
+  @OneToMany(() => UserBoard, (userBoard) => userBoard.user)
+  public userBoards?: UserBoard[];
 
   @OneToMany(() => Exp, (exp) => exp.user)
   public exps?: Exp[];
