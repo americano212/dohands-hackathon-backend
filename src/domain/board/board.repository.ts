@@ -37,4 +37,13 @@ export class BoardsRepository {
   public async isExistGoogleSheetId(googleSheetId: string): Promise<boolean> {
     return await this.boardsRepository.exists({ where: { googleSheetId: googleSheetId } });
   }
+
+  public async findAllByUserId(userId: number): Promise<Board[]> {
+    const boards = await this.boardsRepository
+      .createQueryBuilder('board')
+      .leftJoinAndSelect('board.userBoards', 'userBoard', 'userBoard.board_id = board.board_id')
+      .leftJoinAndSelect('userBoard.user', 'user', 'user.user_id = :userId', { userId: userId })
+      .getMany();
+    return boards;
+  }
 }
