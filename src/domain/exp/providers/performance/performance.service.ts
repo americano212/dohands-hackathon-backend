@@ -9,8 +9,15 @@ import { Exp } from '#entities/exp.entity';
 export class PerformanceService {
   constructor(private expsRepository: ExpsRepository) {}
 
-  public async getPerformance(userId: number): Promise<NullableType<PerformanceResponseDto>[]> {
+  /*ex)
+    [
+      {expAt:2024-01-01, exp: 1500, result: "A", diff : 2},
+      {expAt:null, exp: 0, result: "", diff : 0},
+    ]
+  */
+  public async getPerformance(userId: number): Promise<PerformanceResponseDto[]> {
     const quarters = [1, 2]; // H1, H2에 해당하는 쿼터
+
     const results = await Promise.all(
       quarters.map(async (quarter) => {
         const [current, previous] = await Promise.all([
@@ -28,7 +35,7 @@ export class PerformanceService {
   private processPerformance(
     current: NullableType<Exp>,
     previous: NullableType<Exp>,
-  ): NullableType<PerformanceResponseDto> {
+  ): PerformanceResponseDto {
     const grades = ['D등급', 'C등급', 'B등급', 'A등급', 'S등급'];
 
     const currentResult = current?.result?.charAt(0) ?? '';
@@ -40,7 +47,7 @@ export class PerformanceService {
     return {
       expAt: current?.expAt || null,
       exp: current?.exp || 0,
-      result: currentResult || null,
+      result: currentResult,
       diff: currentIdx !== -1 && previousIdx !== -1 ? currentIdx - previousIdx : null,
     };
   }

@@ -2,8 +2,8 @@ import { Exp } from '#entities/exp.entity';
 import { PickType } from '@nestjs/swagger';
 
 export class UpdatePerformanceDto extends PickType(Exp, [
-  'userId',
-  'googleSheetId',
+  'user',
   'expAt',
   'exp',
+  'result',
 ] as const) {}

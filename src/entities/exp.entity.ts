@@ -10,12 +10,13 @@ export class Exp extends CoreEntity {
   @IsInt()
   public expId!: number;
 
-  @ApiProperty({ example: 10, description: '구글 스프레드시트 index' })
-  @Column({ type: 'int', nullable: true })
-  @IsInt()
-  public googleSheetId?: number | null;
+  @ApiProperty({ example: '10', description: '구글 스프레드시트 index (행 번호)' })
+  @Column({ type: 'varchar', nullable: true })
+  @MaxLength(10)
+  @IsString()
+  public googleSheetId?: string | null;
 
-  @ApiProperty({ description: '퀘스트명명' })
+  @ApiProperty({ description: '퀘스트명' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(255)
   @IsString()
@@ -49,6 +50,11 @@ export class Exp extends CoreEntity {
   @IsString()
   public result?: string | null;
 
+  @ApiProperty({ example: 'week', description: '직무별 퀘스트, 리더부여 퀘스트에서 주기' })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public frequency?: string | null;
+
   @ApiProperty({ example: 1, description: '주차 (1~52)' })
   @Column({ type: 'int', nullable: true })
   @IsInt()
@@ -62,5 +68,5 @@ export class Exp extends CoreEntity {
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.exps, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
-  userId!: User;
+  user!: User;
 }

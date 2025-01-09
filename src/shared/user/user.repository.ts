@@ -37,6 +37,20 @@ export class UsersRepository {
     });
   }
 
+  public async findOneByEmployeeId(employeeId: string): Promise<NullableType<User>> {
+    return await this.usersRepository.findOne({
+      relations: { roles: true },
+      where: { employeeId: employeeId },
+      select: {
+        userId: true,
+        username: true,
+        id: true,
+        password: true,
+        roles: { roleName: true },
+      },
+    });
+  }
+
   public async isExistUsername(username: string): Promise<boolean> {
     return await this.usersRepository.exists({ where: { username: username } });
   }

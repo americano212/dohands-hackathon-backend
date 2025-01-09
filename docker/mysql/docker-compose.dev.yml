@@ -2,7 +2,6 @@ services:
   # Database for Development. (PORT 3306)
   dev-db:
     image: mysql/mysql-server:latest
-    restart: always
     ports:
       - 3306:3306
     environment:
