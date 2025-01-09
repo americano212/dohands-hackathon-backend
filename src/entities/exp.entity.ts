@@ -50,10 +50,13 @@ export class Exp extends CoreEntity {
   @IsString()
   public result?: string | null;
 
-  @ApiProperty({ example: 'week', description: '직무별 퀘스트, 리더부여 퀘스트에서 주기' })
+  @ApiProperty({
+    example: 'week',
+    description: '직무별 퀘스트/리더부여 퀘스트에서 주기, 전사 프로젝트에서 프로젝트 기간',
+  })
   @Column({ type: 'varchar', nullable: true })
   @IsString()
-  public frequency?: string | null;
+  public period?: string | null;
 
   @ApiProperty({ example: 1, description: '주차 (1~52)' })
   @Column({ type: 'int', nullable: true })
@@ -64,6 +67,11 @@ export class Exp extends CoreEntity {
   @Column({ type: 'int', nullable: true })
   @IsInt()
   public productivity?: number | null;
+
+  @ApiProperty({ example: '프로젝트 내용 예시', description: '프로젝트 내용' })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public content?: string | null;
 
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.exps, { nullable: false, onDelete: 'CASCADE' })

@@ -6,6 +6,7 @@ import { UpdatePerformanceDto } from './providers/performance/dto';
 import { NullableType } from 'src/common/types';
 import { ExpStatusResponseDto } from './providers/dto/exp-status-res.dto';
 import { CreateExpDto } from './providers/dto';
+import { UpdateCompanyQuestDto } from './providers/company-quest/dto';
 
 // 직군 키 타입
 type JobFamily = 'F' | 'B' | 'G' | 'T';
@@ -145,7 +146,6 @@ export class ExpsRepository {
     return await this.expsRepository.save(await this.expsRepository.create(expData));
   }
 
-  //사원번호와 기입한 연도, 상하반기(H1,H2)가 같은 경우에만 update
   public async updatePerformance(
     googleSheetId: string,
     expType: string,
@@ -154,6 +154,18 @@ export class ExpsRepository {
     const result = await this.expsRepository.update(
       { googleSheetId: googleSheetId, expType: expType },
       performanceData,
+    );
+    return result.affected ? true : false;
+  }
+
+  public async updateCompanyQuest(
+    googleSheetId: string,
+    expType: string,
+    companyQuestData: UpdateCompanyQuestDto,
+  ): Promise<boolean> {
+    const result = await this.expsRepository.update(
+      { googleSheetId: googleSheetId, expType: expType },
+      companyQuestData,
     );
     return result.affected ? true : false;
   }
@@ -202,7 +214,7 @@ export class ExpsRepository {
   }
 
   public async isExistGoogleSheetId(createExpDto: CreateExpDto): Promise<boolean> {
-    if (createExpDto.expType[0] === 'H') {
+    if (createExpDto.expType[0] === 'H' || createExpDto.expType[0] === 'C') {
       return await this.expsRepository
         .createQueryBuilder('exp')
         .andWhere('exp.expType = :expType', { expType: createExpDto.expType })

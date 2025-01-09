@@ -1,16 +1,11 @@
 import { Exp } from '#entities/exp.entity';
 import { PickType } from '@nestjs/swagger';
 
-export class CreateExpDto extends PickType(Exp, [
+export class UpdateCompanyQuestDto extends PickType(Exp, [
   'user',
-  'googleSheetId',
-  'questName',
-  'exp',
-  'expType',
   'expAt',
-  'result',
+  'exp',
   'period',
-  'week',
-  'productivity',
+  'questName',
   'content',
 ] as const) {}

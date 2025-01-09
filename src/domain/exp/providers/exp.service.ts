@@ -6,6 +6,7 @@ import { ExpStatusResponseDto } from './dto/exp-status-res.dto';
 import { UsersRepository } from 'src/shared/user/user.repository';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PerformanceFromGSSDto } from './performance/dto';
+import { CompanyQuestFromGSSDto } from './company-quest/dto/company-quest-from-gss.dto';
 
 @Injectable()
 export class ExpService {
@@ -105,6 +106,43 @@ export class ExpService {
 
   public async processCompanyQuestGSS(tabName: string, range: string): Promise<boolean> {
     //todo
-    return tabName + range ? true : false;
+    const values = await this.gssService.getValueFromSheet({ tabName, range });
+    for (let idx = 0; idx < values.length; idx++) {
+      const value = values[idx];
+      if (value[2] === '' || value[4] === '' || value[5] === '' || value[7] === '') continue;
+      const user = await this.usersRepository.findOneByEmployeeId(value[2]);
+      if (!user) {
+        throw new NotFoundException(`Not Found user_id ${value[2]}`);
+      }
+      const expAt = new Date();
+      if (value[0] !== '') expAt.setMonth(Number(value[0]));
+      if (value[1] !== '') expAt.setDate(Number(value[1]));
+      const exp: CompanyQuestFromGSSDto = {
+        googleSheetId: `${idx + 8}`,
+        user: user,
+        exp: Number(value[7]),
+        expAt: expAt,
+        questName: value[4],
+        content: value[6],
+        period: value[5],
+        expType: 'C',
+      };
+
+      const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
+
+      if (isExist) {
+        await this.expsRepository.updateCompanyQuest(exp.googleSheetId, exp.expType, {
+          user: exp.user,
+          expAt: exp.expAt,
+          exp: exp.exp,
+          period: exp.period,
+          questName: exp.questName,
+          content: exp.content,
+        });
+      } else {
+        await this.expsRepository.create(exp);
+      }
+    }
+    return true;
   }
 }
