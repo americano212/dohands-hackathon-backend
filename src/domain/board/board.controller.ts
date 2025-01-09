@@ -10,7 +10,7 @@ export class BoardController {
   constructor(private readonly board: BoardService) {}
 
   @ApiBearerAuth()
-  @ApiOperation({ summary: '전체 게시물 목록 조회 + 읽음/안읽음 명시 API' })
+  @ApiOperation({ summary: '전체 게시물 목록 조회(읽음/안읽음 명시) API' })
   @ApiResponse({ type: [BoardListResponseDto] })
   @Get()
   public async findAll(@UserId() userId: number): Promise<BoardListResponseDto[]> {
