@@ -41,8 +41,13 @@ export class BoardsRepository {
   public async findAllByUserId(userId: number): Promise<Board[]> {
     const boards = await this.boardsRepository
       .createQueryBuilder('board')
-      .leftJoinAndSelect('board.userBoards', 'userBoard', 'userBoard.board_id = board.board_id')
-      .leftJoinAndSelect('userBoard.user', 'user', 'user.user_id = :userId', { userId: userId })
+      .leftJoinAndSelect(
+        'board.userBoards',
+        'userBoard',
+        'userBoard.user_id = :userId', // userId 조건을 ON 절에 추가
+        { userId },
+      )
+      .leftJoinAndSelect('userBoard.user', 'user') // userBoard와 user를 LEFT JOIN
       .getMany();
     return boards;
   }
