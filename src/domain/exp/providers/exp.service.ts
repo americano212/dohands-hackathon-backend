@@ -7,6 +7,8 @@ import { UsersRepository } from 'src/shared/user/user.repository';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PerformanceFromGSSDto } from './performance/dto';
 import { CompanyQuestFromGSSDto } from './company-quest/dto/company-quest-from-gss.dto';
+import { JobQuestFromGSSDto } from './job-quest/dto';
+import { LeaderQuestFromGSSDto } from './leader-quest/dto';
 
 @Injectable()
 export class ExpService {
@@ -36,21 +38,22 @@ export class ExpService {
 
   @Cron(CronExpression.EVERY_MINUTE)
   public async getExpsFromGSS(): Promise<boolean> {
+    //TODO: 하드 코딩된부분 고치기!
     const h1Range = 'B10:E16';
     const h2Range = 'H10:K16';
-    const jobRange = 'B15:I67';
+    const jobRange = 'B16:C67';
+    const jobInfo = 'B13:J13';
     const leaderRange = 'B10:H31';
     const companyRange = 'B8:I12';
     // 상반기 인사평가
     await this.processPerformanceGSS('인사평가', h1Range, 1);
     // 하반기 인사평가
     await this.processPerformanceGSS('인사평가', h2Range, 2);
-
     // 직무별 퀘스트
-    await this.processJobQuestGSS('직무별 퀘스트', jobRange);
-
+    await this.processJobQuestGSS('직무별 퀘스트', jobRange, jobInfo);
+    // 리더부여 퀘스트
     await this.processLeaderQuestGSS('리더부여 퀘스트', leaderRange);
-
+    // 전사 프로젝트
     await this.processCompanyQuestGSS('전사 프로젝트', companyRange);
 
     return true;
@@ -94,18 +97,114 @@ export class ExpService {
     return true;
   }
 
-  public async processJobQuestGSS(tabName: string, range: string): Promise<boolean> {
-    //todo
+  public async processJobQuestGSS(
+    tabName: string,
+    range: string,
+    jobInfo: string,
+  ): Promise<boolean> {
+    const values = await this.gssService.getValueFromSheet({ tabName, range });
+    const infos = await this.gssService.getValueFromSheet({ tabName, range: jobInfo });
+    const users = await this.usersRepository.findAllByJobGroup(infos[0][4], Number(infos[0][5]));
+    if (!users) return true;
+
+    for (let idx = 0; idx < values.length; idx++) {
+      const value = values[idx];
+      if (value[1] === '0') continue;
+      for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        const expAt = new Date();
+        let week = null;
+        if (infos[0][6] === '월' && value[0] !== '') {
+          expAt.setMonth(Number(value[0]));
+        }
+        if (infos[0][6] === '주' && value[0] !== '') {
+          week = Number(value[0]);
+        }
+        const exp: JobQuestFromGSSDto = {
+          googleSheetId: `${idx + 16}`,
+          user: user,
+          exp: Number(value[1]),
+          expAt: expAt,
+          period: infos[0][6] === '월' ? 'month' : 'week',
+          result: value[1] === infos[0][0] ? 'MAX' : 'MEDIAN',
+          expType: 'J',
+          week: week,
+        };
+
+        const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
+
+        if (isExist) {
+          await this.expsRepository.updateJobQuest(exp.googleSheetId, exp.expType, {
+            expAt: exp.expAt,
+            exp: exp.exp,
+            period: exp.period,
+            week: exp.week,
+            result: exp.result,
+          });
+        } else {
+          await this.expsRepository.create(exp);
+        }
+      }
+    }
     return tabName + range ? true : false;
   }
 
   public async processLeaderQuestGSS(tabName: string, range: string): Promise<boolean> {
-    //todo
+    const values = await this.gssService.getValueFromSheet({ tabName, range });
+    for (let idx = 0; idx < values.length; idx++) {
+      const value = values[idx];
+      if (
+        (value[0] === '' && value[1] === '') ||
+        value[2] === '' ||
+        value[4] === '' ||
+        value[5] === '' ||
+        value[6] === ''
+      )
+        continue;
+      const user = await this.usersRepository.findOneByEmployeeId(value[2]);
+      if (!user) {
+        throw new NotFoundException(`Not Found user_id ${value[2]}`);
+      }
+      const expAt = new Date();
+      let week = null;
+      let period = 'month';
+      if (value[0] !== '') {
+        week = Number(value[0]);
+        period = 'week';
+      }
+      if (value[1] !== '') expAt.setMonth(Number(value[1]));
+      const exp: LeaderQuestFromGSSDto = {
+        googleSheetId: `${idx + 10}`,
+        user: user,
+        exp: Number(value[6]),
+        expAt: expAt,
+        week: week,
+        questName: value[4],
+        result: value[5] === 'Max' ? 'MAX' : 'MEDIAN',
+        period: period,
+        expType: 'L',
+      };
+
+      const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
+
+      if (isExist) {
+        await this.expsRepository.updateLeaderQuest(exp.googleSheetId, exp.expType, {
+          user: exp.user,
+          week: exp.week,
+          expAt: exp.expAt,
+          exp: exp.exp,
+          period: exp.period,
+          questName: exp.questName,
+          result: exp.result,
+        });
+      } else {
+        await this.expsRepository.create(exp);
+      }
+    }
     return tabName + range ? true : false;
   }
 
   public async processCompanyQuestGSS(tabName: string, range: string): Promise<boolean> {
-    //todo
     const values = await this.gssService.getValueFromSheet({ tabName, range });
     for (let idx = 0; idx < values.length; idx++) {
       const value = values[idx];

@@ -7,6 +7,8 @@ import { NullableType } from 'src/common/types';
 import { ExpStatusResponseDto } from './providers/dto/exp-status-res.dto';
 import { CreateExpDto } from './providers/dto';
 import { UpdateCompanyQuestDto } from './providers/company-quest/dto';
+import { UpdateJobQuestDto } from './providers/job-quest/dto';
+import { UpdateLeaderQuestDto } from './providers/leader-quest/dto';
 
 // 직군 키 타입
 type JobFamily = 'F' | 'B' | 'G' | 'T';
@@ -71,7 +73,7 @@ export class ExpsRepository {
     const currentYearExp = await this.expsRepository
       .createQueryBuilder('exp')
       .select('SUM(exp.exp)', 'totalExp')
-      .where('exp.user = :user', { user })
+      .where('exp.user = :userId', { userId: user })
       .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
       .getRawOne()
       .then((result) => Number(result.totalExp) || 0); // 합계가 없을 경우 0으로 처리
@@ -92,7 +94,7 @@ export class ExpsRepository {
       .createQueryBuilder('exp')
       .select('YEAR(exp.expAt)', 'year') // 연도별 그룹화
       .addSelect('SUM(exp.exp)', 'exp') // 경험치 합계
-      .where('exp.user = :userId', { user }) // 유저 필터링
+      .where('exp.user = :userId', { userId: user }) // 유저 필터링
       .andWhere('YEAR(exp.expAt) < :year', { year: currentYear }) // 올해 데이터 제외
       .groupBy('YEAR(exp.expAt)') // 연도로 그룹화
       .orderBy('YEAR(exp.expAt)', 'ASC') // 연도 오름차순 정렬
@@ -170,6 +172,30 @@ export class ExpsRepository {
     return result.affected ? true : false;
   }
 
+  public async updateJobQuest(
+    googleSheetId: string,
+    expType: string,
+    jobQuestData: UpdateJobQuestDto,
+  ): Promise<boolean> {
+    const result = await this.expsRepository.update(
+      { googleSheetId: googleSheetId, expType: expType },
+      jobQuestData,
+    );
+    return result.affected ? true : false;
+  }
+
+  public async updateLeaderQuest(
+    googleSheetId: string,
+    expType: string,
+    leaderQuestData: UpdateLeaderQuestDto,
+  ): Promise<boolean> {
+    const result = await this.expsRepository.update(
+      { googleSheetId: googleSheetId, expType: expType },
+      leaderQuestData,
+    );
+    return result.affected ? true : false;
+  }
+
   //quarter ex) 1 or 2 -> H1은 작년 H2, H2는 올해 H1 구하도록 함
   //인사평가 변화량 구하는 API에서 사용
   public async getLastPerformance(userId: number, quarter: number): Promise<NullableType<Exp>> {
@@ -214,21 +240,24 @@ export class ExpsRepository {
   }
 
   public async isExistGoogleSheetId(createExpDto: CreateExpDto): Promise<boolean> {
-    if (createExpDto.expType[0] === 'H' || createExpDto.expType[0] === 'C') {
+    if (createExpDto.expType[0] !== 'J') {
       return await this.expsRepository
         .createQueryBuilder('exp')
-        .andWhere('exp.expType = :expType', { expType: createExpDto.expType })
+        .where('exp.expType = :expType', { expType: createExpDto.expType })
         .andWhere('exp.googleSheetId = :googleSheetId', {
           googleSheetId: createExpDto.googleSheetId,
         })
         .getExists();
     }
 
-    // TODO 나머지 퀘스트들에 대해 exist 판단
+    // 직무별 퀘스트 exist 판단
     return await this.expsRepository
       .createQueryBuilder('exp')
-      .where('exp.googleSheetId = :googleSheetId', { googleSheetId: createExpDto.googleSheetId })
-      .andWhere('exp.userId = :userId', { userId: createExpDto.user.id })
+      .where('exp.user = :userId', { userId: createExpDto.user.userId })
+      .andWhere('exp.expType = :expType', { expType: createExpDto.expType })
+      .andWhere('exp.googleSheetId = :googleSheetId', {
+        googleSheetId: createExpDto.googleSheetId,
+      })
       .getExists();
   }
 }

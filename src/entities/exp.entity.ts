@@ -63,11 +63,6 @@ export class Exp extends CoreEntity {
   @IsInt()
   public week?: number | null;
 
-  @ApiProperty({ description: '생산성 수치(직무별 퀘스트)' })
-  @Column({ type: 'int', nullable: true })
-  @IsInt()
-  public productivity?: number | null;
-
   @ApiProperty({ example: '프로젝트 내용 예시', description: '프로젝트 내용' })
   @Column({ type: 'varchar', nullable: true })
   @IsString()

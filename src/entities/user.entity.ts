@@ -50,7 +50,7 @@ export class User extends CoreEntity {
   @IsString()
   public department?: string | null;
 
-  @ApiProperty({ example: '1', description: '직무 그룹 (1/2)' })
+  @ApiProperty({ example: 1, description: '직무 그룹 (1/2)' })
   @Column({ type: 'int', nullable: true })
   @IsInt()
   public jobGroup?: number | null;
