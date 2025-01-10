@@ -7,6 +7,7 @@ import { SuccessResponseDto } from 'src/common/dto';
 import { CompanyQuestService, ExpService, JobQuestService } from './providers';
 import { CompanyQuestResponseDto } from './providers/company-quest/dto/company-quest-res.dto';
 import { JobQuestResponseDto } from './providers/job-quest/dto';
+import { ExpStatusResponseDto } from './providers/dto';
 
 @ApiTags('Exp')
 @Controller('exp')
@@ -42,6 +43,16 @@ export class ExpController {
   @Get('/job-quest')
   public async getJobQuest(@UserId() userId: number): Promise<JobQuestResponseDto[]> {
     return await this.jobQuest.getJobQuest(userId);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '경험치 현황 조회 API',
+  })
+  @ApiResponse({ type: ExpStatusResponseDto })
+  @Get('/status')
+  public async getExpStatus(@UserId() userId: number): Promise<ExpStatusResponseDto> {
+    return await this.exp.getExpStatus(userId);
   }
 
   @ApiOperation({ summary: '구글 스프레드 시트에서 퀘스트 정보 강제 갱신(새로고침)' })
