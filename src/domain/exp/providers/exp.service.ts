@@ -172,7 +172,7 @@ export class ExpService {
         week = Number(value[0]);
         period = 'week';
       }
-      if (value[1] !== '') expAt.setMonth(Number(value[1]));
+      if (value[1] !== '') expAt.setMonth(Number(value[1]) - 1);
       const exp: LeaderQuestFromGSSDto = {
         googleSheetId: `${idx + 10}`,
         user: user,
@@ -214,7 +214,7 @@ export class ExpService {
         throw new NotFoundException(`Not Found user_id ${value[2]}`);
       }
       const expAt = new Date();
-      if (value[0] !== '') expAt.setMonth(Number(value[0]));
+      if (value[0] !== '') expAt.setMonth(Number(value[0]) - 1);
       if (value[1] !== '') expAt.setDate(Number(value[1]));
       const exp: CompanyQuestFromGSSDto = {
         googleSheetId: `${idx + 8}`,
