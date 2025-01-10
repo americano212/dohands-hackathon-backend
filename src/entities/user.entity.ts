@@ -4,6 +4,8 @@ import { IsInt, IsString, Length, MaxLength } from 'class-validator';
 import { CoreEntity } from './core.entity';
 import { UserRole } from './user-role.entity';
 import { Exp } from './exp.entity';
+import { Notice } from './notice.entity';
+import { UserBoard } from './user-board.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -88,11 +90,31 @@ export class User extends CoreEntity {
   @IsString()
   public fcmToken?: string | null;
 
+  @ApiProperty({ example: 'F-B', description: '프로필 이미지 식별자(직군-성별)' })
+  @Column({ type: 'varchar', nullable: true, default: 'F-B' })
+  @IsString()
+  public profileImageCode?: string | null;
+
+  @ApiProperty({ example: 'A', description: '프로필 badge 식별자' })
+  @Column({ type: 'varchar', nullable: true })
+  public profileBadgeCode?: string | null;
+
+  // ! 최대 5개라해서 정규화 안하는게 나을듯
+  @ApiProperty({ example: ['A', 'B'], description: '사용할 수 있는 badge 리스트' })
+  @Column({ type: 'json', nullable: true })
+  public possibleBadgeCodeList?: string[] | null;
+
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
 
+  @OneToMany(() => UserBoard, (userBoard) => userBoard.user)
+  public userBoards?: UserBoard[];
+
   @OneToMany(() => Exp, (exp) => exp.user)
   public exps?: Exp[];
+
+  @OneToMany(() => Notice, (notice) => notice.user)
+  public notices?: Notice[];
 
   constructor(userId?: number) {
     super();

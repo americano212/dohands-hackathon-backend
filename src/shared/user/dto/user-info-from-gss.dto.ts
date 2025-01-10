@@ -10,6 +10,7 @@ export class UserInfoFromGSSDto extends PickType(User, [
   'jobGroup',
   'jobFamily',
   'jobLevel',
+  'profileImageCode',
   'id',
   'password',
   'totalExpLastYear',

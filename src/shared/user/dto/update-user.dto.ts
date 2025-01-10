@@ -1,8 +1,22 @@
 import { User } from '#entities/user.entity';
 import { PickType } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
-export class UpdateUserDto extends PickType(User, ['password', 'fcmToken'] as const) {}
+export class UpdateUserDto extends PickType(User, [
+  'password',
+  'fcmToken',
+  'profileImageCode',
+  'profileBadgeCode',
+] as const) {
+  @IsOptional()
+  public override password?: string;
 
-export class UpdateUserPasswordDto extends PickType(UpdateUserDto, ['password'] as const) {}
+  @IsOptional()
+  public override fcmToken?: string;
 
-export class UpdateUserFCMDto extends PickType(UpdateUserDto, ['fcmToken'] as const) {}
+  @IsOptional()
+  public override profileImageCode?: string;
+
+  @IsOptional()
+  public override profileBadgeCode?: string;
+}

@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 import { CoreEntity } from '.';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserBoard } from './user-board.entity';
 
 @Entity('board')
 export class Board extends CoreEntity {
@@ -28,4 +29,7 @@ export class Board extends CoreEntity {
   @IsNotEmpty()
   @IsString()
   public content!: string;
+
+  @OneToMany(() => UserBoard, (userBoard) => userBoard.board)
+  public userBoards?: UserBoard[];
 }
