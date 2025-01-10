@@ -4,12 +4,16 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { PerformanceResponseDto } from './providers/performance/dto';
 import { UserId } from 'src/common';
 import { SuccessResponseDto } from 'src/common/dto';
-import { ExpService } from './providers';
+import { CompanyQuestService, ExpService, JobQuestService } from './providers';
+import { CompanyQuestResponseDto } from './providers/company-quest/dto/company-quest-res.dto';
+import { JobQuestResponseDto } from './providers/job-quest/dto';
 
 @ApiTags('Exp')
 @Controller('exp')
 export class ExpController {
   constructor(
+    private readonly companyQuest: CompanyQuestService,
+    private readonly jobQuest: JobQuestService,
     private readonly performance: PerformanceService,
     private readonly exp: ExpService,
   ) {}
@@ -20,6 +24,24 @@ export class ExpController {
   @Get('/performance')
   public async getPerformance(@UserId() userId: number): Promise<PerformanceResponseDto[]> {
     return await this.performance.getPerformance(userId);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '올해 전사프로젝트 결과 조회 API [프로젝트1, 프로젝트2, ...]' })
+  @ApiResponse({ type: [CompanyQuestResponseDto] })
+  @Get('/company-quest')
+  public async getCompanyQuest(@UserId() userId: number): Promise<CompanyQuestResponseDto[]> {
+    return await this.companyQuest.getCompanyQuest(userId);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '올해 직무별 퀘스트 결과 조회 API [1년 전체 month 혹은 week에 해당하는 크기의 배열]',
+  })
+  @ApiResponse({ type: [JobQuestResponseDto] })
+  @Get('/job-quest')
+  public async getJobQuest(@UserId() userId: number): Promise<JobQuestResponseDto[]> {
+    return await this.jobQuest.getJobQuest(userId);
   }
 
   @ApiOperation({ summary: '구글 스프레드 시트에서 퀘스트 정보 강제 갱신(새로고침)' })

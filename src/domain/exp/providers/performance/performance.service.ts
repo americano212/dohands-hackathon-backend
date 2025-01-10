@@ -38,8 +38,8 @@ export class PerformanceService {
   ): PerformanceResponseDto {
     const grades = ['D등급', 'C등급', 'B등급', 'A등급', 'S등급'];
 
-    const currentResult = current?.achieveGrade?.charAt(0) ?? '';
-    const previousResult = previous?.achieveGrade?.charAt(0) ?? '';
+    const currentResult = current?.achieveGrade ?? '';
+    const previousResult = previous?.achieveGrade ?? '';
 
     const currentIdx = grades.indexOf(currentResult);
     const previousIdx = grades.indexOf(previousResult);

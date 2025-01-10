@@ -90,8 +90,8 @@ export class User extends CoreEntity {
   @IsString()
   public fcmToken?: string | null;
 
-  @ApiProperty({ example: 'F-B', description: '프로필 이미지 식별자(직군-성별)' })
-  @Column({ type: 'varchar', nullable: true, default: 'F-B' })
+  @ApiProperty({ example: 'F-B', description: '프로필 이미지 식별자(직군_성별) A:남자, B:여자' })
+  @Column({ type: 'varchar', nullable: true, default: 'F_B' })
   @IsString()
   public profileImageCode?: string | null;
 

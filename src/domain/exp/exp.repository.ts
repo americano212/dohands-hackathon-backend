@@ -222,21 +222,45 @@ export class ExpsRepository {
   //올해 인사평가 결과 가져오기
   public async getPerformance(userId: number, quarter: number): Promise<NullableType<Exp>> {
     const currentYear = new Date().getFullYear();
-    if (quarter === 1) {
-      return await this.expsRepository
-        .createQueryBuilder('exp')
-        .where('exp.user = :userId', { userId: userId })
-        .andWhere('exp.expType = :expType', { expType: 'H1' })
-        .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
-        .getOne();
-    } else {
-      return await this.expsRepository
-        .createQueryBuilder('exp')
-        .where('exp.user = :userId', { userId: userId })
-        .andWhere('exp.expType = :expType', { expType: 'H2' })
-        .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
-        .getOne();
-    }
+    return await this.expsRepository
+      .createQueryBuilder('exp')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.expType = :expType', { expType: `H${quarter}` })
+      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .getOne();
+  }
+
+  //올해 전사 프로젝트 결과 가져오기
+  public async getCompanyQuest(userId: number): Promise<Exp[]> {
+    const currentYear = new Date().getFullYear();
+    return await this.expsRepository
+      .createQueryBuilder('exp')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.expType = :expType', { expType: 'C' })
+      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .orderBy('exp.expAt', 'ASC')
+      .getMany();
+  }
+
+  public async getJobQuest(userId: number): Promise<[Exp[], string]> {
+    const currentYear = new Date().getFullYear();
+    const weeklyResult = await this.expsRepository
+      .createQueryBuilder('exp')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .andWhere('exp.period = :period', { period: 'week' })
+      .orderBy('exp.week', 'ASC')
+      .getMany();
+
+    if (weeklyResult.length > 0) return [weeklyResult, 'week'];
+    const monthlyResult = await this.expsRepository
+      .createQueryBuilder('exp')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .andWhere('exp.period = :period', { period: 'month' })
+      .orderBy('MONTH(exp.expAt)', 'ASC') // week 기준 오름차순 정렬
+      .getMany();
+    return [monthlyResult, 'month'];
   }
 
   public async isExistGoogleSheetId(createExpDto: CreateExpDto): Promise<boolean> {

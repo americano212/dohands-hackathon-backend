@@ -16,13 +16,13 @@ export class Exp extends CoreEntity {
   @IsString()
   public googleSheetId?: string | null;
 
-  @ApiProperty({ description: '퀘스트명' })
+  @ApiProperty({ example: '퀘스트명 예시', description: '퀘스트명' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(255)
   @IsString()
   public questName?: string | null;
 
-  @ApiProperty({ description: '획득한 경험치' })
+  @ApiProperty({ example: 500, description: '획득한 경험치' })
   @Column({ type: 'int', nullable: false })
   @IsInt()
   public exp!: number;
