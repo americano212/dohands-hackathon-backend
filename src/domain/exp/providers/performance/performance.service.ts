@@ -11,8 +11,8 @@ export class PerformanceService {
 
   /*ex)
     [
-      {expAt:2024-01-01, exp: 1500, result: "A", diff : 2},
-      {expAt:null, exp: 0, result: "", diff : 0},
+      {expAt:2024-01-01, exp: 1500, achieveGrade: "A", diff : 2},
+      {expAt:null, exp: 0, achieveGrade: "", diff : 0},
     ]
   */
   public async getPerformance(userId: number): Promise<PerformanceResponseDto[]> {
@@ -38,8 +38,8 @@ export class PerformanceService {
   ): PerformanceResponseDto {
     const grades = ['D등급', 'C등급', 'B등급', 'A등급', 'S등급'];
 
-    const currentResult = current?.result?.charAt(0) ?? '';
-    const previousResult = previous?.result?.charAt(0) ?? '';
+    const currentResult = current?.achieveGrade?.charAt(0) ?? '';
+    const previousResult = previous?.achieveGrade?.charAt(0) ?? '';
 
     const currentIdx = grades.indexOf(currentResult);
     const previousIdx = grades.indexOf(previousResult);
@@ -47,7 +47,7 @@ export class PerformanceService {
     return {
       expAt: current?.expAt || null,
       exp: current?.exp || 0,
-      result: currentResult,
+      achieveGrade: currentResult,
       diff: currentIdx !== -1 && previousIdx !== -1 ? currentIdx - previousIdx : null,
     };
   }

@@ -8,7 +8,7 @@ export class CreateExpDto extends PickType(Exp, [
   'exp',
   'expType',
   'expAt',
-  'result',
+  'achieveGrade',
   'period',
   'week',
   'content',

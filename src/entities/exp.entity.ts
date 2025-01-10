@@ -48,7 +48,7 @@ export class Exp extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsString()
-  public result?: string | null;
+  public achieveGrade?: string | null;
 
   @ApiProperty({
     example: 'week',

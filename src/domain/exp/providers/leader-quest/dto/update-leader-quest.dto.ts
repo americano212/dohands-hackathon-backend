@@ -8,5 +8,5 @@ export class UpdateLeaderQuestDto extends PickType(Exp, [
   'exp',
   'expAt',
   'questName',
-  'result',
+  'achieveGrade',
 ] as const) {}

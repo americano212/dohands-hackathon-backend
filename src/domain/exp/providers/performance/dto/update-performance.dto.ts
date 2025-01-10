@@ -5,5 +5,5 @@ export class UpdatePerformanceDto extends PickType(Exp, [
   'user',
   'expAt',
   'exp',
-  'result',
+  'achieveGrade',
 ] as const) {}

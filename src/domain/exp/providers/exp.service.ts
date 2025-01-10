@@ -75,7 +75,7 @@ export class ExpService {
       const exp: PerformanceFromGSSDto = {
         googleSheetId: `${idx + 10}`,
         user: user,
-        result: value[2],
+        achieveGrade: value[2],
         exp: Number(value[3]),
         expAt: new Date(),
         expType: `H${quarter}`,
@@ -88,7 +88,7 @@ export class ExpService {
           user: exp.user,
           expAt: exp.expAt,
           exp: exp.exp,
-          result: exp.result,
+          achieveGrade: exp.achieveGrade,
         });
       } else {
         await this.expsRepository.create(exp);
@@ -126,7 +126,7 @@ export class ExpService {
           exp: Number(value[1]),
           expAt: expAt,
           period: infos[0][6] === '월' ? 'month' : 'week',
-          result: value[1] === infos[0][0] ? 'MAX' : 'MEDIAN',
+          achieveGrade: value[1] === infos[0][0] ? 'MAX' : 'MEDIAN',
           expType: 'J',
           week: week,
         };
@@ -139,7 +139,7 @@ export class ExpService {
             exp: exp.exp,
             period: exp.period,
             week: exp.week,
-            result: exp.result,
+            achieveGrade: exp.achieveGrade,
           });
         } else {
           await this.expsRepository.create(exp);
@@ -180,7 +180,7 @@ export class ExpService {
         expAt: expAt,
         week: week,
         questName: value[4],
-        result: value[5] === 'Max' ? 'MAX' : 'MEDIAN',
+        achieveGrade: value[5] === 'Max' ? 'MAX' : 'MEDIAN',
         period: period,
         expType: 'L',
       };
@@ -195,7 +195,7 @@ export class ExpService {
           exp: exp.exp,
           period: exp.period,
           questName: exp.questName,
-          result: exp.result,
+          achieveGrade: exp.achieveGrade,
         });
       } else {
         await this.expsRepository.create(exp);

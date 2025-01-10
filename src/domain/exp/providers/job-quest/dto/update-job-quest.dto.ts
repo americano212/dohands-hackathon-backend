@@ -6,5 +6,5 @@ export class UpdateJobQuestDto extends PickType(Exp, [
   'period',
   'expAt',
   'week',
-  'result',
+  'achieveGrade',
 ] as const) {}

@@ -15,7 +15,7 @@ export class LeaderQuestFromGSSDto extends CreateExpDto {
     example: 'MAX',
     description: '달성 내용 ex)MAX, MEDIAN',
   })
-  public override result!: string;
+  public override achieveGrade!: string;
 
   @ApiProperty({
     example: 'week',

@@ -12,5 +12,5 @@ export class PerformanceFromGSSDto extends CreateExpDto {
     example: 'MAX',
     description: '달성 내용 ex)MAX, MEDIAN, S등급, A등급, B등급, C등급, D등급',
   })
-  public override result!: string;
+  public override achieveGrade!: string;
 }
