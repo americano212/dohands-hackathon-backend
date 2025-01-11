@@ -37,6 +37,45 @@ export class UsersRepository {
     });
   }
 
+  public async findOneByEmployeeId(employeeId: string): Promise<NullableType<User>> {
+    return await this.usersRepository.findOne({
+      relations: { roles: true },
+      where: { employeeId: employeeId },
+      select: {
+        userId: true,
+        username: true,
+        id: true,
+        password: true,
+        roles: { roleName: true },
+      },
+    });
+  }
+
+  public async findAllByJobGroup(
+    department: string | null,
+    jobGroup: number | null,
+  ): Promise<NullableType<User[]>> {
+    const where: any = {};
+    if (department !== null) {
+      where.department = department;
+    }
+    if (jobGroup !== null) {
+      where.jobGroup = jobGroup;
+    }
+
+    return await this.usersRepository.find({
+      relations: { roles: true },
+      where: where,
+      select: {
+        userId: true,
+        username: true,
+        id: true,
+        password: true,
+        roles: { roleName: true },
+      },
+    });
+  }
+
   public async isExistUsername(username: string): Promise<boolean> {
     return await this.usersRepository.exists({ where: { username: username } });
   }

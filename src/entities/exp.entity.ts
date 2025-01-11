@@ -10,18 +10,19 @@ export class Exp extends CoreEntity {
   @IsInt()
   public expId!: number;
 
-  @ApiProperty({ example: 10, description: '구글 스프레드시트 index' })
-  @Column({ type: 'int', nullable: true })
-  @IsInt()
-  public googleSheetId?: number | null;
+  @ApiProperty({ example: '10', description: '구글 스프레드시트 index (행 번호)' })
+  @Column({ type: 'varchar', nullable: true })
+  @MaxLength(10)
+  @IsString()
+  public googleSheetId?: string | null;
 
-  @ApiProperty({ description: '퀘스트명명' })
+  @ApiProperty({ example: '퀘스트명 예시', description: '퀘스트명' })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(255)
   @IsString()
   public questName?: string | null;
 
-  @ApiProperty({ description: '획득한 경험치' })
+  @ApiProperty({ example: 500, description: '획득한 경험치' })
   @Column({ type: 'int', nullable: false })
   @IsInt()
   public exp!: number;
@@ -40,21 +41,32 @@ export class Exp extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   public expAt?: Date | null;
 
-  @ApiProperty({ example: 'MAX', description: '달성 내용 ex)MAX, MEDIAN, S, A, B, C, D' })
+  @ApiProperty({
+    example: 'MAX',
+    description: '달성 내용 ex)MAX, MEDIAN, S등급, A등급, B등급, C등급, D등급',
+  })
   @Column({ type: 'varchar', nullable: true })
   @MaxLength(30)
   @IsString()
-  public result?: string | null;
+  public achieveGrade?: string | null;
+
+  @ApiProperty({
+    example: 'week',
+    description: '직무별 퀘스트/리더부여 퀘스트에서 주기, 전사 프로젝트에서 프로젝트 기간',
+  })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public period?: string | null;
 
   @ApiProperty({ example: 1, description: '주차 (1~52)' })
   @Column({ type: 'int', nullable: true })
   @IsInt()
   public week?: number | null;
 
-  @ApiProperty({ description: '생산성 수치(직무별 퀘스트)' })
-  @Column({ type: 'int', nullable: true })
-  @IsInt()
-  public productivity?: number | null;
+  @ApiProperty({ example: '프로젝트 내용 예시', description: '프로젝트 내용' })
+  @Column({ type: 'varchar', nullable: true })
+  @IsString()
+  public content?: string | null;
 
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.exps, { nullable: false, onDelete: 'CASCADE' })
