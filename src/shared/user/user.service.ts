@@ -29,6 +29,15 @@ export class UserService {
     return user;
   }
 
+  public async findAllUserId(): Promise<number[]> {
+    const users = await this.usersRepository.findAllUserId();
+    const userIdList: number[] = [];
+    users.forEach((user) => {
+      userIdList.push(user.userId);
+    });
+    return userIdList;
+  }
+
   public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
     const user = await this.findOne(userId);
     const userInfo: GetUserInfoResponseDto = {
