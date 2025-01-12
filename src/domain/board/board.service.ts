@@ -90,7 +90,7 @@ export class BoardService {
         const sendNoticeData: SendNoticeDto = {
           userIdList,
           title: '새로운 글이 게시되었습니다!',
-          body: '게시판을 통해 새 게시글을 확인해 보세요.',
+          body: '게시판을 통해 글을 확인해 보세요.',
         };
         await this.notice.sendNotice(sendNoticeData);
       }
