@@ -7,6 +7,7 @@ import { Exp } from './exp.entity';
 import { Notice } from './notice.entity';
 import { UserBoard } from './user-board.entity';
 import { UserBadge } from './user-badge.entity';
+import { BadgeCode } from 'src/domain/badge/badge.enum';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -100,7 +101,7 @@ export class User extends CoreEntity {
   @IsString()
   public profileImageCode?: string | null;
 
-  @ApiProperty({ example: 'A', description: '프로필 badge 식별자' })
+  @ApiProperty({ example: BadgeCode.ANNUAL_MVP_2024, description: '프로필 badge 식별자' })
   @Column({ type: 'varchar', nullable: true })
   public profileBadgeCode?: string | null;
 
