@@ -7,6 +7,8 @@ import { UserService } from 'src/shared/user/user.service';
 import { UserBoardsRepository } from './user-board.repository';
 import { Board } from '#entities/board.entity';
 import { Transactional } from 'typeorm-transactional';
+import { NoticeService } from 'src/shared/notice/providers';
+import { SendNoticeDto } from 'src/shared/notice/providers/dto';
 
 @Injectable()
 export class BoardService {
@@ -15,6 +17,7 @@ export class BoardService {
     private readonly userBoardsRepository: UserBoardsRepository,
     private readonly user: UserService,
     private readonly gssService: GoogleSheetService,
+    private readonly notice: NoticeService,
   ) {}
 
   @Transactional()
@@ -54,6 +57,7 @@ export class BoardService {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
+  @Transactional()
   public async getContentsFromGSS(): Promise<boolean> {
     const tabName = 'notice_board';
     const range = 'C7:D100'; // TODO 레거시
@@ -82,8 +86,13 @@ export class BoardService {
       } else {
         // 새로운 글일 때는 추가 및 FCM push 알림
         await this.boardsRepository.create(board);
-        // TODO FCM 연결
-        console.log('Mock FCM Alert~!');
+        const userIdList = await this.user.findAllUserId(); // 전체 UserId 불러오기
+        const sendNoticeData: SendNoticeDto = {
+          userIdList,
+          title: '새로운 글이 게시되었습니다!',
+          body: '게시판을 통해 새 게시글을 확인해 보세요.',
+        };
+        await this.notice.sendNotice(sendNoticeData);
       }
     }
 
