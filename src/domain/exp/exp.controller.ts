@@ -4,10 +4,11 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { PerformanceResponseDto } from './providers/performance/dto';
 import { UserId } from 'src/common';
 import { SuccessResponseDto } from 'src/common/dto';
-import { CompanyQuestService, ExpService, JobQuestService } from './providers';
+import { CompanyQuestService, ExpService, JobQuestService, LeaderQuestService } from './providers';
 import { CompanyQuestResponseDto } from './providers/company-quest/dto/company-quest-res.dto';
-import { JobQuestResponseDto } from './providers/job-quest/dto';
 import { ExpStatusResponseDto } from './providers/dto';
+import { JobQuestFullResponseDto } from './providers/job-quest/dto/job-quest-full-res.dto';
+import { LeaderQuestFullResponseDto } from './providers/leader-quest/dto';
 
 @ApiTags('Exp')
 @Controller('exp')
@@ -16,6 +17,7 @@ export class ExpController {
     private readonly companyQuest: CompanyQuestService,
     private readonly jobQuest: JobQuestService,
     private readonly performance: PerformanceService,
+    private readonly leaderQuest: LeaderQuestService,
     private readonly exp: ExpService,
   ) {}
 
@@ -37,12 +39,23 @@ export class ExpController {
 
   @ApiBearerAuth()
   @ApiOperation({
-    summary: '올해 직무별 퀘스트 결과 조회 API [1년 전체 month 혹은 week에 해당하는 크기의 배열]',
+    summary:
+      '올해 직무별 퀘스트 결과 조회 API jobQuestResponse: [1년 전체 month 혹은 week에 해당하는 크기의 배열]',
   })
-  @ApiResponse({ type: [JobQuestResponseDto] })
+  @ApiResponse({ type: JobQuestFullResponseDto })
   @Get('/job-quest')
-  public async getJobQuest(@UserId() userId: number): Promise<JobQuestResponseDto[]> {
+  public async getJobQuest(@UserId() userId: number): Promise<JobQuestFullResponseDto> {
     return await this.jobQuest.getJobQuest(userId);
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '올해 리더부여 퀘스트 결과 조회 API leaderQuestResponse: [퀘스트 개수만큼의 배열]',
+  })
+  @ApiResponse({ type: LeaderQuestFullResponseDto })
+  @Get('/leader-quest')
+  public async getLeaderQuest(@UserId() userId: number): Promise<LeaderQuestFullResponseDto> {
+    return await this.leaderQuest.getLeaderQuest(userId);
   }
 
   @ApiBearerAuth()

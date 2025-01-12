@@ -247,6 +247,7 @@ export class ExpsRepository {
     const weeklyResult = await this.expsRepository
       .createQueryBuilder('exp')
       .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.expType = :expType', { expType: 'J' })
       .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
       .andWhere('exp.period = :period', { period: 'week' })
       .orderBy('exp.week', 'ASC')
@@ -256,6 +257,46 @@ export class ExpsRepository {
     const monthlyResult = await this.expsRepository
       .createQueryBuilder('exp')
       .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.expType = :expType', { expType: 'J' })
+      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .andWhere('exp.period = :period', { period: 'month' })
+      .orderBy('MONTH(exp.expAt)', 'ASC') // week 기준 오름차순 정렬
+      .getMany();
+    return [monthlyResult, 'month'];
+  }
+
+  /*
+  public async getLeaderQuestNameList(userId: number): Promise<string[]> {
+    const rawResults = await this.expsRepository
+      .createQueryBuilder('exp')
+      .select('exp.questName', 'questName')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.exp_type = :expType', { expType: 'L' })
+      .groupBy('exp.questName')
+      .getRawMany();
+
+    return rawResults.map((result) => result.questName);
+  }
+  */
+
+  public async getLeaderQuest(userId: number, questName: string): Promise<[Exp[], string]> {
+    const currentYear = new Date().getFullYear();
+    const weeklyResult = await this.expsRepository
+      .createQueryBuilder('exp')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.expType = :expType', { expType: 'L' })
+      .andWhere('exp.questName = :questName', { questName: questName })
+      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .andWhere('exp.period = :period', { period: 'week' })
+      .orderBy('exp.week', 'ASC')
+      .getMany();
+
+    if (weeklyResult.length > 0) return [weeklyResult, 'week'];
+    const monthlyResult = await this.expsRepository
+      .createQueryBuilder('exp')
+      .where('exp.user = :userId', { userId: userId })
+      .andWhere('exp.expType = :expType', { expType: 'L' })
+      .andWhere('exp.questName = :questName', { questName: questName })
       .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
       .andWhere('exp.period = :period', { period: 'month' })
       .orderBy('MONTH(exp.expAt)', 'ASC') // week 기준 오름차순 정렬
