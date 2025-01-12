@@ -23,6 +23,12 @@ export class UsersRepository {
     });
   }
 
+  public async findAllUserId(): Promise<User[]> {
+    return await this.usersRepository.find({
+      select: { userId: true },
+    });
+  }
+
   public async findOneById(id: string): Promise<NullableType<User>> {
     return await this.usersRepository.findOne({
       relations: { roles: true },
