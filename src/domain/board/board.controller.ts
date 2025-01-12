@@ -1,10 +1,11 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
 import { BoardService } from './board.service';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SuccessResponseDto } from 'src/common/dto';
 import { BoardListResponseDto, BoardResponseDto } from './dto';
 import { UserId } from 'src/common';
 
+@ApiTags('Board')
 @Controller('board')
 export class BoardController {
   constructor(private readonly board: BoardService) {}
@@ -15,6 +16,12 @@ export class BoardController {
   @Get()
   public async findAll(@UserId() userId: number): Promise<BoardListResponseDto[]> {
     return await this.board.findAllByUserId(userId);
+  }
+
+  @ApiOperation({ summary: '구글 스프레드 시트에서 게시물 정보 강제 갱신(새로고침)' })
+  @Get('/gss')
+  public async forceRefreshBoardFromGSS(): Promise<SuccessResponseDto> {
+    return { isSuccess: await this.board.getContentsFromGSS() };
   }
 
   @ApiOperation({ summary: '게시물 1개 조회 API' })
@@ -52,11 +59,5 @@ export class BoardController {
     @Param('board_id') boardId: number,
   ): Promise<SuccessResponseDto> {
     return { isSuccess: await this.board.setBoardRead(userId, boardId) };
-  }
-
-  @ApiOperation({ summary: '구글 스프레드 시트에서 게시물 정보 강제 갱신(새로고침)' })
-  @Get('/gss')
-  public async forceRefreshBoardFromGSS(): Promise<SuccessResponseDto> {
-    return { isSuccess: await this.board.getContentsFromGSS() };
   }
 }
