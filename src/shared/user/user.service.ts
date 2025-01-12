@@ -14,6 +14,7 @@ import { GoogleSheetService, NotUserId } from 'src/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { User } from '#entities/index';
 import { BadgeCode } from 'src/domain/badge/badge.enum';
+import { JobPosition } from './job-position.const';
 
 @Injectable()
 export class UserService {
@@ -51,6 +52,7 @@ export class UserService {
       hireDate: user.hireDate,
       department: user.department,
       jobGroup: user.jobGroup,
+      jobPosition: user.jobPosition,
       jobFamily: user.jobFamily,
       jobLevel: user.jobLevel,
       totalExpLastYear: user.totalExpLastYear,
@@ -148,7 +150,7 @@ export class UserService {
   @Cron(CronExpression.EVERY_MINUTE) // 1분마다 자동 실행
   public async getUserInfoFromGSS(): Promise<boolean> {
     const tabName = 'member_info';
-    const range = 'B10:L100'; // TODO 레거시
+    const range = 'B10:M100'; // TODO 레거시
     const values = await this.gssService.getValueFromSheet({ tabName, range });
 
     for (let idx = 0; idx < values.length; idx++) {
@@ -156,23 +158,27 @@ export class UserService {
 
       if (value[0] === '') continue; // No employeeId
       if (value[2] === '') continue; // No gender
-      if (value[5] === '') continue; // No jobFamily & jobLevel
-      if (value[6] === '') continue; // No id
+      if (value[7] === '') continue; // No jobFamily & jobLevel
+      if (value[8] === '') continue; // No id
 
       const employeeId = value[0]; // 사번 2023010101
       const username = value[1]; // 유저명 김민수
       const gender = value[2] === '남' ? 'A' : 'B'; // 성별 M A | B
       const hireDate = new Date(value[3]); // 입사일 2023-01-01
       const department = value[4]; // 소속 음성 1센터
-      const jobGroup = Number(value[5]); // 직무그룹(직책) 1
-      const jobLevel = value[6]; // 레벨 F1 - I
-      const jobFamily = value[6][0]; // 직군분류 F
+      const jobGroup = Number(value[5]); // 직무그룹 1
+      const jobPositionText: string = value[6]; // 직책 파트장
+      const jobLevel = value[7]; // 레벨 F1 - I
+      const jobFamily = jobLevel[0]; // 직군분류 F
       const profileImageCode = `${jobFamily}_${gender}`;
-      const id = value[7];
-      const default_password = value[8];
-      const change_password = value[9];
-      const totalExpLastYear = Number(value[10].replace(/,/g, ''));
+      const id = value[8];
+      const default_password = value[9];
+      const change_password = value[10];
+      const totalExpLastYear = Number(value[11].replace(/,/g, ''));
 
+      const jobPosition = JobPosition[jobPositionText];
+      console.log(jobPositionText);
+      console.log(jobPosition);
       const userInfo: UserInfoFromGSSDto = {
         googleSheetId: `${idx + 10}`,
         employeeId,
@@ -181,6 +187,7 @@ export class UserService {
         hireDate,
         department,
         jobGroup,
+        jobPosition,
         jobLevel,
         jobFamily,
         profileImageCode,

@@ -8,6 +8,7 @@ export class GetUserInfoResponseDto extends PickType(User, [
   'hireDate',
   'department',
   'jobGroup',
+  'jobPosition',
   'jobFamily',
   'jobLevel',
   'totalExpLastYear',
