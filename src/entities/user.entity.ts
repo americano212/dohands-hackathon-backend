@@ -63,6 +63,11 @@ export class User extends CoreEntity {
   @IsInt()
   public jobGroup?: number | null;
 
+  @ApiProperty({ example: 1, description: '직책 (파트장(1), 대리(2), 팀장(3), 사원(4))' })
+  @Column({ type: 'int', nullable: false, default: 4 })
+  @IsInt()
+  public jobPosition!: number;
+
   @ApiProperty({
     example: 'F',
     description: '레벨 분류용 직군 (F현장직군, B관리직군, G성장전략, T기술직군)',
