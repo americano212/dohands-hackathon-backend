@@ -13,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GoogleSheetService, NotUserId } from 'src/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { User } from '#entities/index';
+import { BadgeCode } from 'src/domain/badge/badge.enum';
 
 @Injectable()
 export class UserService {
@@ -40,6 +41,10 @@ export class UserService {
 
   public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
     const user = await this.findOne(userId);
+    const possibleBadgeCodeList: string[] = [];
+    user.badges?.forEach((badge) => {
+      possibleBadgeCodeList.push(badge.badgeCode);
+    });
     const userInfo: GetUserInfoResponseDto = {
       employeeId: user.employeeId,
       username: user.username,
@@ -51,7 +56,7 @@ export class UserService {
       totalExpLastYear: user.totalExpLastYear,
       profileImageCode: user.profileImageCode,
       profileBadgeCode: user.profileBadgeCode,
-      possibleBadgeCodeList: !user.possibleBadgeCodeList ? [] : user.possibleBadgeCodeList,
+      possibleBadgeCodeList: possibleBadgeCodeList,
     };
     return userInfo;
   }
@@ -119,6 +124,9 @@ export class UserService {
   }
 
   private async updateProfileBadgeCode(userId: number, profileBadgeCode: string): Promise<boolean> {
+    const badgeCodesList = Object.values(BadgeCode) as string[];
+    const isValid = badgeCodesList.includes(profileBadgeCode);
+    if (!isValid) throw new NotFoundException(`Not Found ${profileBadgeCode}, invalid BadgeCode`);
     return await this.usersRepository.update(userId, { profileBadgeCode });
   }
 

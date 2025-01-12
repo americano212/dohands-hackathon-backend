@@ -18,7 +18,7 @@ export class UsersRepository {
 
   public async findOne(userId: number): Promise<NullableType<User>> {
     return await this.usersRepository.findOne({
-      relations: { roles: true },
+      relations: { roles: true, badges: true },
       where: { userId: userId },
     });
   }

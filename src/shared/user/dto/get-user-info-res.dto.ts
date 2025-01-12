@@ -1,5 +1,6 @@
 import { User } from '#entities/user.entity';
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { BadgeCode } from 'src/domain/badge/badge.enum';
 
 export class GetUserInfoResponseDto extends PickType(User, [
   'employeeId',
@@ -12,5 +13,10 @@ export class GetUserInfoResponseDto extends PickType(User, [
   'totalExpLastYear',
   'profileImageCode',
   'profileBadgeCode',
-  'possibleBadgeCodeList',
-] as const) {}
+] as const) {
+  @ApiProperty({
+    example: [BadgeCode.ANNUAL_MVP_2024, BadgeCode.COMPANY_PROJECT_OVER_5],
+    description: '사용할 수 있는 badge code 리스트',
+  })
+  public possibleBadgeCodeList?: string[] | null;
+}
