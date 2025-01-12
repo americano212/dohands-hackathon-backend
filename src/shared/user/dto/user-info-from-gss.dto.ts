@@ -5,6 +5,7 @@ export class UserInfoFromGSSDto extends PickType(User, [
   'googleSheetId',
   'employeeId',
   'username',
+  'gender',
   'hireDate',
   'department',
   'jobGroup',

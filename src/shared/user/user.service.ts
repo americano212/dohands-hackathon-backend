@@ -131,30 +131,45 @@ export class UserService {
   @Cron(CronExpression.EVERY_MINUTE) // 1분마다 자동 실행
   public async getUserInfoFromGSS(): Promise<boolean> {
     const tabName = 'member_info';
-    const range = 'B10:K100'; // TODO 레거시
+    const range = 'B10:L100'; // TODO 레거시
     const values = await this.gssService.getValueFromSheet({ tabName, range });
 
     for (let idx = 0; idx < values.length; idx++) {
-      if (values[idx][0] === '') continue; // No employeeId
-      if (values[idx][5] === '') continue; // No jobFamily & jobLevel
-      if (values[idx][6] === '') continue; // No id
+      const value = values[idx];
 
-      const default_password = values[idx][7];
-      const change_password = values[idx][8];
+      if (value[0] === '') continue; // No employeeId
+      if (value[2] === '') continue; // No gender
+      if (value[5] === '') continue; // No jobFamily & jobLevel
+      if (value[6] === '') continue; // No id
+
+      const employeeId = value[0]; // 사번 2023010101
+      const username = value[1]; // 유저명 김민수
+      const gender = value[2] === '남' ? 'A' : 'B'; // 성별 M A | B
+      const hireDate = new Date(value[3]); // 입사일 2023-01-01
+      const department = value[4]; // 소속 음성 1센터
+      const jobGroup = Number(value[5]); // 직무그룹(직책) 1
+      const jobLevel = value[6]; // 레벨 F1 - I
+      const jobFamily = value[6][0]; // 직군분류 F
+      const profileImageCode = `${jobFamily}_${gender}`;
+      const id = value[7];
+      const default_password = value[8];
+      const change_password = value[9];
+      const totalExpLastYear = Number(value[10].replace(/,/g, ''));
 
       const userInfo: UserInfoFromGSSDto = {
         googleSheetId: `${idx + 10}`,
-        employeeId: values[idx][0],
-        username: values[idx][1],
-        hireDate: new Date(values[idx][2]),
-        department: values[idx][3],
-        jobGroup: Number(values[idx][4]),
-        jobFamily: values[idx][5][0],
-        jobLevel: values[idx][5],
-        profileImageCode: `${values[idx][5][0]}_B`,
-        id: values[idx][6],
+        employeeId,
+        username,
+        gender,
+        hireDate,
+        department,
+        jobGroup,
+        jobLevel,
+        jobFamily,
+        profileImageCode,
+        id,
         password: change_password !== '' ? change_password : default_password,
-        totalExpLastYear: Number(values[idx][9].replace(/,/g, '')),
+        totalExpLastYear,
       };
 
       const isExist = await this.usersRepository.isExistGoogleSheetId(userInfo.googleSheetId);
