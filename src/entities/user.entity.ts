@@ -6,6 +6,7 @@ import { UserRole } from './user-role.entity';
 import { Exp } from './exp.entity';
 import { Notice } from './notice.entity';
 import { UserBoard } from './user-board.entity';
+import { UserBadge } from './user-badge.entity';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -119,6 +120,9 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Notice, (notice) => notice.user)
   public notices?: Notice[];
+
+  @OneToMany(() => UserBadge, (badge) => badge.user)
+  public badges?: UserBadge[];
 
   constructor(userId?: number) {
     super();
