@@ -13,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { GoogleSheetService, NotUserId } from 'src/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { User } from '#entities/index';
+import { BadgeCode } from 'src/domain/badge/badge.enum';
 
 @Injectable()
 export class UserService {
@@ -123,6 +124,9 @@ export class UserService {
   }
 
   private async updateProfileBadgeCode(userId: number, profileBadgeCode: string): Promise<boolean> {
+    const badgeCodesList = Object.values(BadgeCode) as string[];
+    const isValid = badgeCodesList.includes(profileBadgeCode);
+    if (!isValid) throw new NotFoundException(`Not Found ${profileBadgeCode}, invalid BadgeCode`);
     return await this.usersRepository.update(userId, { profileBadgeCode });
   }
 

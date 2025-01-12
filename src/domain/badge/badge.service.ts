@@ -14,7 +14,6 @@ export class BadgeService {
   @Transactional()
   public async giveBadgeToUser(userId: number, badgeCode: string): Promise<boolean> {
     const badgeCodesList = Object.values(BadgeCode) as string[];
-    console.log(badgeCodesList);
     const isValid = badgeCodesList.includes(badgeCode);
     if (!isValid) throw new NotFoundException(`Not Found ${badgeCode}, invalid BadgeCode`);
 
