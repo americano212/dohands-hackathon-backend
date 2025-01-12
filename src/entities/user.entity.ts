@@ -104,11 +104,6 @@ export class User extends CoreEntity {
   @Column({ type: 'varchar', nullable: true })
   public profileBadgeCode?: string | null;
 
-  // ! 최대 5개라해서 정규화 안하는게 나을듯
-  @ApiProperty({ example: ['A', 'B'], description: '사용할 수 있는 badge 리스트' })
-  @Column({ type: 'json', nullable: true })
-  public possibleBadgeCodeList?: string[] | null;
-
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
 

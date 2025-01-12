@@ -40,6 +40,10 @@ export class UserService {
 
   public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
     const user = await this.findOne(userId);
+    const possibleBadgeCodeList: string[] = [];
+    user.badges?.forEach((badge) => {
+      possibleBadgeCodeList.push(badge.badgeCode);
+    });
     const userInfo: GetUserInfoResponseDto = {
       employeeId: user.employeeId,
       username: user.username,
@@ -51,7 +55,7 @@ export class UserService {
       totalExpLastYear: user.totalExpLastYear,
       profileImageCode: user.profileImageCode,
       profileBadgeCode: user.profileBadgeCode,
-      possibleBadgeCodeList: !user.possibleBadgeCodeList ? [] : user.possibleBadgeCodeList,
+      possibleBadgeCodeList: possibleBadgeCodeList,
     };
     return userInfo;
   }
