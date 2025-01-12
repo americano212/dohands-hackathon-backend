@@ -138,7 +138,7 @@ export class UserService {
     const { googleSheetId } = user;
     if (!googleSheetId) throw new NotFoundException(`Not Found googleSheetId user_id ${userId}`);
     const tabName = 'member_info';
-    const range = `J${googleSheetId}`;
+    const range = `L${googleSheetId}`; // TODO 레거시
     await this.gssService.writeValueFromSheet({
       tabName: tabName,
       range: range,
