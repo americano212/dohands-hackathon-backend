@@ -6,6 +6,8 @@ import { UserRole } from './user-role.entity';
 import { Exp } from './exp.entity';
 import { Notice } from './notice.entity';
 import { UserBoard } from './user-board.entity';
+import { UserBadge } from './user-badge.entity';
+import { BadgeCode } from 'src/domain/badge/badge.enum';
 
 @Entity('user')
 export class User extends CoreEntity {
@@ -99,14 +101,9 @@ export class User extends CoreEntity {
   @IsString()
   public profileImageCode?: string | null;
 
-  @ApiProperty({ example: 'A', description: '프로필 badge 식별자' })
+  @ApiProperty({ example: BadgeCode.ANNUAL_MVP_2024, description: '프로필 badge 식별자' })
   @Column({ type: 'varchar', nullable: true })
   public profileBadgeCode?: string | null;
-
-  // ! 최대 5개라해서 정규화 안하는게 나을듯
-  @ApiProperty({ example: ['A', 'B'], description: '사용할 수 있는 badge 리스트' })
-  @Column({ type: 'json', nullable: true })
-  public possibleBadgeCodeList?: string[] | null;
 
   @OneToMany(() => UserRole, (userRole) => userRole.user)
   public roles?: UserRole[];
@@ -119,6 +116,9 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Notice, (notice) => notice.user)
   public notices?: Notice[];
+
+  @OneToMany(() => UserBadge, (badge) => badge.user)
+  public badges?: UserBadge[];
 
   constructor(userId?: number) {
     super();
