@@ -32,6 +32,10 @@ export class User extends CoreEntity {
   @IsString()
   public username?: string | null;
 
+  @ApiProperty({ example: 'A', description: '성별 A:남성, B:여성' })
+  @Column({ type: 'varchar', nullable: false, default: 'A' })
+  public gender!: string;
+
   @ApiProperty({ example: 'minsukim', description: '로그인을 위한 ID' })
   @Column({ type: 'varchar', nullable: false, unique: true })
   @IsString()
@@ -90,7 +94,7 @@ export class User extends CoreEntity {
   @IsString()
   public fcmToken?: string | null;
 
-  @ApiProperty({ example: 'F-B', description: '프로필 이미지 식별자(직군_성별) A:남자, B:여자' })
+  @ApiProperty({ example: 'F_B', description: '프로필 이미지 식별자(직군_성별) A:남성, B:여성' })
   @Column({ type: 'varchar', nullable: true, default: 'F_B' })
   @IsString()
   public profileImageCode?: string | null;
