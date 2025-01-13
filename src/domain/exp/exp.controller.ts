@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { PerformanceService } from './providers/performance/performance.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PerformanceResponseDto } from './providers/performance/dto';
@@ -6,7 +6,7 @@ import { UserId } from 'src/common';
 import { SuccessResponseDto } from 'src/common/dto';
 import { CompanyQuestService, ExpService, JobQuestService, LeaderQuestService } from './providers';
 import { CompanyQuestResponseDto } from './providers/company-quest/dto/company-quest-res.dto';
-import { ExpStatusResponseDto } from './providers/dto';
+import { ExpStatusResponseDto, InsertExpDto } from './providers/dto';
 import { JobQuestFullResponseDto } from './providers/job-quest/dto/job-quest-full-res.dto';
 import { LeaderQuestFullResponseDto } from './providers/leader-quest/dto';
 
@@ -66,6 +66,14 @@ export class ExpController {
   @Get('/status')
   public async getExpStatus(@UserId() userId: number): Promise<ExpStatusResponseDto> {
     return await this.exp.getExpStatus(userId);
+  }
+
+  @ApiOperation({
+    summary: '경험치 DB에 추가(테스트용)',
+  })
+  @Post('/insert-exp')
+  public async postExp(@Body() body: InsertExpDto) {
+    return await this.exp.postExp(body);
   }
 
   @ApiOperation({ summary: '구글 스프레드 시트에서 퀘스트 정보 강제 갱신(새로고침)' })

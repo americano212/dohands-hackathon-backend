@@ -2,18 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { ExpsRepository } from '../../exp.repository';
 import { JobQuestFullResponseDto } from './dto/job-quest-full-res.dto';
 import { UsersRepository } from 'src/shared/user/user.repository';
+import { UtilService } from 'src/common';
 @Injectable()
 export class JobQuestService {
   constructor(
     private expsRepository: ExpsRepository,
     private usersRepository: UsersRepository,
+    private utilService: UtilService,
   ) {}
   public async getJobQuest(userId: number): Promise<JobQuestFullResponseDto> {
     const [results, period] = await this.expsRepository.getJobQuest(userId);
+    const weeks = this.utilService.getWeeksByYear(new Date().getFullYear());
     const user = await this.usersRepository.findOne(userId);
     if (period === 'week') {
       // 1~52주 기본 배열 생성
-      const fullWeeks = Array.from({ length: 52 }, (_, index) => ({
+      const fullWeeks = Array.from({ length: weeks.length }, (_, index) => ({
+        range: weeks[index].range,
+        month: weeks[index].month,
         exp: 0,
         achieveGrade: 'MIN',
         index: index + 1, // 1~52
@@ -23,7 +28,10 @@ export class JobQuestService {
       // 결과를 주차(index) 기준으로 덮어쓰기
       results.forEach((result) => {
         totalExp += result.exp;
-        fullWeeks[(result.week || 1) - 1] = {
+        const tmpIndex = (result.week || 1) - 1;
+        fullWeeks[tmpIndex] = {
+          range: weeks[tmpIndex].range,
+          month: weeks[tmpIndex].month,
           exp: result.exp,
           achieveGrade: result.achieveGrade || 'MIN',
           index: result.week || 1,
@@ -50,6 +58,7 @@ export class JobQuestService {
         exp: 0,
         achieveGrade: 'MIN',
         index: index + 1, // 1~12
+        month: index + 1,
       }));
       let totalExp = 0;
 
@@ -62,6 +71,7 @@ export class JobQuestService {
             exp: result.exp,
             achieveGrade: result.achieveGrade || 'MIN',
             index: monthIndex + 1,
+            month: fullMonths[monthIndex].month,
           };
         }
       });

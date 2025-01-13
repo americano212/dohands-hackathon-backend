@@ -8,6 +8,18 @@ export class LeaderQuestResponseDto extends PickType(Exp, ['exp', 'achieveGrade'
     description: 'period가 week인 경우에는 주차, month인 경우에는 월',
   })
   public index!: number;
+
+  @ApiProperty({
+    example: ['01.05', '01.11'],
+    description: 'period가 week인 경우 기간 나타냄',
+  })
+  public range?: string[];
+
+  @ApiProperty({
+    example: 1,
+    description: '몇월에 속하는지',
+  })
+  public month!: number;
 }
 
 export class QuestInfo {
