@@ -41,3 +41,6 @@ lerna-debug.log*
 
 # Dev Enviroment
 docker/mysql/data/*
+
+# Sentry Config File
+.sentryclirc
