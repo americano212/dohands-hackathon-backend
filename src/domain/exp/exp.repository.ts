@@ -89,25 +89,30 @@ export class ExpsRepository {
       .then((result) => Number(result.totalExp) || 0);
     */
 
-    // 연도별 경험치 합계 가져오기 (올해 제외)
-    const lastYearExpList = await this.expsRepository
+    // 연도별 경험치 가져오기
+    const expList = await this.expsRepository
       .createQueryBuilder('exp')
-      .select('YEAR(exp.expAt)', 'year') // 연도별 그룹화
-      .addSelect('SUM(exp.exp)', 'exp') // 경험치 합계
       .where('exp.user = :userId', { userId: user }) // 유저 필터링
-      .andWhere('YEAR(exp.expAt) < :year', { year: currentYear }) // 올해 데이터 제외
-      .groupBy('YEAR(exp.expAt)') // 연도로 그룹화
-      .orderBy('YEAR(exp.expAt)', 'ASC') // 연도 오름차순 정렬
-      .getRawMany();
+      .orderBy('exp.expAt', 'DESC') // 날짜 내림차순 정렬
+      .getMany();
 
     // 결과 변환 (year와 exp를 객체 형태로 변환)
-    const formattedExpList = lastYearExpList.map((row) => ({
-      year: Number(row.year),
-      exp: Number(row.exp),
+    const formattedExpList = expList.map((row) => ({
+      year: row.expAt?.getFullYear() || currentYear,
+      expType: row.expType,
+      questName:
+        row.questName ||
+        (row.expType.charAt(0) === 'H'
+          ? '인사평가'
+          : row.expType.charAt(0) === 'J'
+            ? '생산성 향상'
+            : ''),
+      exp: row.exp,
+      expAt: row.expAt || new Date(),
     }));
 
-    const lastYearExp = formattedExpList.reduce((sum, item) => sum + item.exp, 0);
-    const totalExp = currentYearExp + lastYearExp;
+    const totalExp = formattedExpList.reduce((sum, item) => sum + item.exp, 0);
+    const lastYearExp = totalExp - currentYearExp;
 
     if (!jobFamily || !['F', 'B', 'G', 'T'].includes(jobFamily)) {
       jobFamily = 'F';
@@ -134,12 +139,15 @@ export class ExpsRepository {
       currentLevelIndex + 1 < levels.length ? levels[currentLevelIndex + 1].exp - totalExp : 0;
 
     return {
+      jobFamily: jobFamily,
       currentLevel: currentLevel,
       expectedLevel: expectedLevel,
-      currentYearExp,
+      currentYearExp: currentYearExp,
       lastYearExp: lastYearExp,
-      lastYearExpList: formattedExpList,
+      totalExp: totalExp,
       expToNextLevel: expToNextLevel,
+      expCount: expList.length,
+      expList: formattedExpList,
     };
   }
 
