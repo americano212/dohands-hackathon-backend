@@ -4,11 +4,13 @@ import { Request, Response } from 'express';
 import { ExceptionResponse } from '../dto';
 
 import { getDetail, getHttpStatus, getMessage } from './utils';
+import { SentryExceptionCaptured } from '@sentry/nestjs';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger: Logger = new Logger();
 
+  @SentryExceptionCaptured()
   public catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();

@@ -11,6 +11,8 @@ import { APIDocument } from './swagger.docs';
 import { winstonLogger } from './config';
 import { ValidationException } from './common/exceptions';
 
+import './instrument';
+
 async function bootstrap(): Promise<string> {
   initializeTransactionalContext();
 

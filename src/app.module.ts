@@ -19,6 +19,7 @@ import { ErrorsInterceptor } from './common/interceptors';
 import { DomainModule } from './domain';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NoticeModule } from './shared/notice/notice.module';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 
 @Module({
   imports: [
@@ -43,12 +44,14 @@ import { NoticeModule } from './shared/notice/notice.module';
     DomainModule,
     ScheduleModule.forRoot(),
     NoticeModule,
+    SentryModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
     { provide: APP_INTERCEPTOR, useClass: ErrorsInterceptor },
+    { provide: APP_FILTER, useClass: SentryGlobalFilter },
   ],
 })
 export class AppModule {}
