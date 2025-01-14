@@ -5,10 +5,11 @@ import { Repository } from 'typeorm';
 import { UpdatePerformanceDto } from './providers/performance/dto';
 import { NullableType } from 'src/common/types';
 import { ExpStatusResponseDto } from './providers/dto/exp-status-res.dto';
-import { CreateExpDto } from './providers/dto';
+import { CreateExpDto, InsertExpDto } from './providers/dto';
 import { UpdateCompanyQuestDto } from './providers/company-quest/dto';
 import { UpdateJobQuestDto } from './providers/job-quest/dto';
 import { UpdateLeaderQuestDto } from './providers/leader-quest/dto';
+import { User } from '#entities/user.entity';
 
 // 직군 키 타입
 type JobFamily = 'F' | 'B' | 'G' | 'T';
@@ -126,17 +127,27 @@ export class ExpsRepository {
     }
 
     // 현재 레벨 계산
-    const currentLevelIndex = levels.findIndex((level) => lastYearExp >= level.exp);
+    const currentLevelIndex = levels.findIndex(
+      (level, index) =>
+        lastYearExp >= level.exp &&
+        (index === levels.length - 1 || lastYearExp < levels[index + 1].exp),
+    );
     const currentLevel = currentLevelIndex >= 0 ? levels[currentLevelIndex].level : levels[0].level;
+    const expToCurrentNextLevel =
+      currentLevelIndex + 1 < levels.length ? levels[currentLevelIndex + 1].exp - lastYearExp : 0;
 
     // 예상 레벨 계산
-    const expectedLevelIndex = levels.findIndex((level) => totalExp >= level.exp);
+    const expectedLevelIndex = levels.findIndex(
+      (level, index) =>
+        totalExp >= level.exp && (index === levels.length - 1 || totalExp < levels[index + 1].exp), // 구간 확인
+    );
+
     const expectedLevel =
       expectedLevelIndex >= 0 ? levels[expectedLevelIndex].level : levels[0].level;
 
     // expToNextLevel 계산
     const expToNextLevel =
-      currentLevelIndex + 1 < levels.length ? levels[currentLevelIndex + 1].exp - totalExp : 0;
+      expectedLevelIndex + 1 < levels.length ? levels[expectedLevelIndex + 1].exp - totalExp : 0;
 
     return {
       jobFamily: jobFamily,
@@ -145,7 +156,10 @@ export class ExpsRepository {
       currentYearExp: currentYearExp,
       lastYearExp: lastYearExp,
       totalExp: totalExp,
+      expToExpectedLevel: levels[expectedLevelIndex].exp,
       expToNextLevel: expToNextLevel,
+      expToCurrentLevel: levels[currentLevelIndex].exp,
+      expToCurrentNextLevel: expToCurrentNextLevel,
       expCount: expList.length,
       expList: formattedExpList,
     };
@@ -332,5 +346,23 @@ export class ExpsRepository {
         googleSheetId: createExpDto.googleSheetId,
       })
       .getExists();
+  }
+
+  public async postExp(user: User, body: InsertExpDto): Promise<boolean> {
+    const newExp = this.expsRepository.create({
+      user: user,
+      questName: body.questName,
+      exp: body.exp,
+      expType: body.expType,
+      expAt: body.expAt,
+      week: body.week,
+      period: body.period,
+      content: body.content,
+      achieveGrade: body.achieveGrade,
+    });
+
+    await this.expsRepository.save(newExp);
+
+    return true;
   }
 }

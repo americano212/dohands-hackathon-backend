@@ -23,13 +23,22 @@ export class ExpStatusResponseDto {
   @ApiProperty({ example: 7, description: '총 경험치 얻은 횟수' })
   public expCount!: number;
 
-  @ApiProperty({ example: 13000, description: '다음 레벨까지 남은 경험치' })
+  @ApiProperty({ example: 13500, description: '내년 예상 레벨에서 총 필요 경험치' })
+  public expToExpectedLevel!: number;
+
+  @ApiProperty({ example: 13000, description: '내년 예상 레벨에서 다음 레벨까지 남은 경험치' })
   public expToNextLevel!: number;
+
+  @ApiProperty({ example: 0, description: '현재 레벨에서 총 필요 경험치' })
+  public expToCurrentLevel!: number;
+
+  @ApiProperty({ example: 0, description: '현재 레벨에서 다음 레벨까지 남은 경험치' })
+  public expToCurrentNextLevel!: number;
 
   @ApiProperty({
     example: [
       {
-        year: 2023,
+        year: 2025,
         expType: 'J',
         questName: '생산성 향상',
         exp: 1500,
@@ -40,7 +49,7 @@ export class ExpStatusResponseDto {
         expType: 'L',
         questName: '월특근',
         exp: 1500,
-        expAt: '2025-01-13T10:39:39.544Z',
+        expAt: '2024-12-13T10:39:39.544Z',
       },
     ],
     description: '과거 획득한 연도별 경험치',

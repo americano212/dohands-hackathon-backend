@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ExpsRepository } from '../exp.repository';
 import { GoogleSheetService } from 'src/common';
-import { ExpResponseDto } from './dto';
+import { ExpResponseDto, InsertExpDto } from './dto';
 import { ExpStatusResponseDto } from './dto/exp-status-res.dto';
 import { UsersRepository } from 'src/shared/user/user.repository';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -243,5 +243,13 @@ export class ExpService {
       }
     }
     return true;
+  }
+
+  public async postExp(body: InsertExpDto): Promise<boolean> {
+    const user = await this.usersRepository.findOneByEmployeeId(body.employeeId);
+    if (!user) {
+      throw new NotFoundException(`Not Found user_id ${body.employeeId}`);
+    }
+    return await this.expsRepository.postExp(user, body);
   }
 }
