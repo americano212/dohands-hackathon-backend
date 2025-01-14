@@ -5,7 +5,7 @@ export class InsertExpDto {
   public employeeId!: string;
 
   @ApiProperty({ example: '퀘스트명 예시', description: '퀘스트명' })
-  public quest_name?: string;
+  public questName?: string;
 
   @ApiProperty({ example: 500, description: '획득한 경험치' })
   public exp!: number;
@@ -36,5 +36,5 @@ export class InsertExpDto {
     example: 'MAX',
     description: '달성 내용 ex)MAX, MEDIAN, S등급, A등급, B등급, C등급, D등급',
   })
-  public achieve_grade?: string | null;
+  public achieveGrade?: string | null;
 }

@@ -351,14 +351,14 @@ export class ExpsRepository {
   public async postExp(user: User, body: InsertExpDto): Promise<boolean> {
     const newExp = this.expsRepository.create({
       user: user,
-      questName: body.quest_name,
+      questName: body.questName,
       exp: body.exp,
       expType: body.expType,
       expAt: body.expAt,
       week: body.week,
       period: body.period,
       content: body.content,
-      achieveGrade: body.achieve_grade,
+      achieveGrade: body.achieveGrade,
     });
 
     await this.expsRepository.save(newExp);
