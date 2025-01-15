@@ -26,7 +26,7 @@ export class BadgeService {
     const isExist = userBadgeCodeList.includes(badgeCode);
     if (isExist) return true;
     const userBadge = await this.badgesRepository.create(badgeCode, user);
-    if (userBadge) this.sendNewBadgeNotice(userId); // 뱃지 추가시 알림 전송
+    if (userBadge) await this.sendNewBadgeNotice(userId); // 뱃지 추가시 알림 전송
     return userBadge ? true : false;
   }
 

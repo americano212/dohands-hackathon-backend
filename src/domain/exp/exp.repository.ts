@@ -152,6 +152,8 @@ export class ExpsRepository {
     return {
       jobFamily: jobFamily,
       currentLevel: currentLevel,
+      currentNextLevel:
+        currentLevelIndex + 1 < levels.length ? levels[currentLevelIndex + 1].level : '-',
       expectedLevel: expectedLevel,
       currentYearExp: currentYearExp,
       lastYearExp: lastYearExp,
@@ -241,14 +243,19 @@ export class ExpsRepository {
     }
   }
 
-  //올해 인사평가 결과 가져오기
-  public async getPerformance(userId: number, quarter: number): Promise<NullableType<Exp>> {
+  //올해 or 작년 인사평가 결과 가져오기
+  public async getPerformance(
+    userId: number,
+    quarter: number,
+    isLastYear: boolean = false,
+  ): Promise<NullableType<Exp>> {
     const currentYear = new Date().getFullYear();
+    const year = isLastYear ? currentYear - 1 : currentYear;
     return await this.expsRepository
       .createQueryBuilder('exp')
       .where('exp.user = :userId', { userId: userId })
       .andWhere('exp.expType = :expType', { expType: `H${quarter}` })
-      .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
+      .andWhere('YEAR(exp.expAt) = :year', { year: year })
       .getOne();
   }
 

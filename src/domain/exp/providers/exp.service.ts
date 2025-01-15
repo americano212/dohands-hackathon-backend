@@ -277,22 +277,38 @@ export class ExpService {
   public async evaluateGivingBadge(userId: number, expType: string): Promise<void> {
     switch (expType) {
       case 'H': // [인사평가]
-        const isSGradeInH1H2 = false; // 인사평가에서 작년 상/하반기 둘다 S 받은 경우
+        let isSGradeInH1H2 = false; // 인사평가에서 작년 상/하반기 둘다 S 받은 경우
+        const h1 = await this.expsRepository.getPerformance(userId, 1, true);
+        const h2 = await this.expsRepository.getPerformance(userId, 1, true);
+        if (h1?.achieveGrade === 'S등급' && h2?.achieveGrade === 'S등급') isSGradeInH1H2 = true;
         if (isSGradeInH1H2)
           await this.badgeService.giveBadgeToUser(userId, BadgeCode.S_GRADE_H1_H2);
         return;
       case 'J': // [직무별]
-        const isExpOver1700 = false; // 직무 미션에서 1700 경험치 이상 획득
+        let isExpOver1700 = false; // 직무 미션에서 1700 경험치 이상 획득
+        let exp = 0;
+        const jobQuestResults = await this.expsRepository.getJobQuest(userId);
+        for (const result of jobQuestResults[0]) {
+          exp += result.exp;
+        }
+        if (exp >= 1700) {
+          isExpOver1700 = true;
+        }
+
         if (isExpOver1700)
           await this.badgeService.giveBadgeToUser(userId, BadgeCode.JOB_EXP_OVER_1700);
         return;
       case 'C': // [전사]
-        const isCompanyProjectOver5 = false; // 전사 프로젝트 5회 이상 참여시
+        let isCompanyProjectOver5 = false; // 전사 프로젝트 5회 이상 참여시
+        const companyQuestResults = await this.expsRepository.getCompanyQuest(userId);
+        if (companyQuestResults.length >= 5) isCompanyProjectOver5 = true;
         if (isCompanyProjectOver5)
           await this.badgeService.giveBadgeToUser(userId, BadgeCode.COMPANY_PROJECT_OVER_5);
         return;
       case 'L': // [리더부여]
-        const isMonthSpecialJobOver6 = false; //  월 특근 미션 경험치 6회 이상 획득시
+        let isMonthSpecialJobOver6 = false; //  월 특근 미션 경험치 6회 이상 획득시
+        const leaderQuestResults = await this.expsRepository.getLeaderQuest(userId, '월특근');
+        if (leaderQuestResults.length >= 6) isMonthSpecialJobOver6 = true;
         if (isMonthSpecialJobOver6)
           await this.badgeService.giveBadgeToUser(userId, BadgeCode.MONTH_SPECIAL_JOB_OVER_6);
         return;
