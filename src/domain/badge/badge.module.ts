@@ -9,7 +9,8 @@ import { NoticeModule } from 'src/shared/notice/notice.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserBadge]), UserModule, NoticeModule],
-  providers: [BadgeService, BadgeRepository],
   controllers: [BadgeController],
+  providers: [BadgeService, BadgeRepository],
+  exports: [BadgeService],
 })
 export class BadgeModule {}

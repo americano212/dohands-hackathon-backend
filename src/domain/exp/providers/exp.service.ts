@@ -9,6 +9,9 @@ import { PerformanceFromGSSDto } from './performance/dto';
 import { CompanyQuestFromGSSDto } from './company-quest/dto/company-quest-from-gss.dto';
 import { JobQuestFromGSSDto } from './job-quest/dto';
 import { LeaderQuestFromGSSDto } from './leader-quest/dto';
+import { Transactional } from 'typeorm-transactional';
+import { BadgeService } from 'src/domain/badge/badge.service';
+import { BadgeCode } from 'src/domain/badge/badge.enum';
 
 @Injectable()
 export class ExpService {
@@ -16,6 +19,7 @@ export class ExpService {
     private readonly usersRepository: UsersRepository,
     private readonly expsRepository: ExpsRepository,
     private readonly gssService: GoogleSheetService,
+    private readonly badgeService: BadgeService,
   ) {}
 
   // limit : 제한
@@ -251,5 +255,33 @@ export class ExpService {
       throw new NotFoundException(`Not Found user_id ${body.employeeId}`);
     }
     return await this.expsRepository.postExp(user, body);
+  }
+
+  @Transactional()
+  public async evaluateGivingBadge(userId: number, expType: string): Promise<void> {
+    switch (expType) {
+      case 'H': // [인사평가]
+        const isSGradeInH1H2 = false; // 인사평가에서 작년 상/하반기 둘다 S 받은 경우
+        if (isSGradeInH1H2)
+          await this.badgeService.giveBadgeToUser(userId, BadgeCode.S_GRADE_H1_H2);
+        return;
+      case 'J': // [직무별]
+        const isExpOver1700 = false; // 직무 미션에서 1700 경험치 이상 획득
+        if (isExpOver1700)
+          await this.badgeService.giveBadgeToUser(userId, BadgeCode.JOB_EXP_OVER_1700);
+        return;
+      case 'C': // [전사]
+        const isCompanyProjectOver5 = false; // 전사 프로젝트 5회 이상 참여시
+        if (isCompanyProjectOver5)
+          await this.badgeService.giveBadgeToUser(userId, BadgeCode.COMPANY_PROJECT_OVER_5);
+        return;
+      case 'L': // [리더부여]
+        const isMonthSpecialJobOver6 = false; //  월 특근 미션 경험치 6회 이상 획득시
+        if (isMonthSpecialJobOver6)
+          await this.badgeService.giveBadgeToUser(userId, BadgeCode.MONTH_SPECIAL_JOB_OVER_6);
+        return;
+      default:
+        return;
+    }
   }
 }
