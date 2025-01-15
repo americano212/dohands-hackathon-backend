@@ -256,6 +256,7 @@ export class ExpsRepository {
       .where('exp.user = :userId', { userId: userId })
       .andWhere('exp.expType = :expType', { expType: `H${quarter}` })
       .andWhere('YEAR(exp.expAt) = :year', { year: year })
+      .orderBy('exp.expAt', 'DESC')
       .getOne();
   }
 
