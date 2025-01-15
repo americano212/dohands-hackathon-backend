@@ -8,6 +8,9 @@ export class ExpStatusResponseDto {
   @ApiProperty({ example: 'F1-I', description: '현재 레벨' })
   public currentLevel!: string;
 
+  @ApiProperty({ example: 'F1-II', description: '현재 레벨의 바로 다음 레벨' })
+  public currentNextLevel!: string;
+
   @ApiProperty({ example: 'F1-II', description: '내년 예상 레벨' })
   public expectedLevel!: string;
 
