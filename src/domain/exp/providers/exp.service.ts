@@ -98,7 +98,8 @@ export class ExpService {
           achieveGrade: exp.achieveGrade,
         });
       } else if (await this.expsRepository.create(exp)) {
-        this.sendNotice(user.userId);
+        await this.sendNotice(user.userId);
+        await this.evaluateGivingBadge(user.userId, exp.expType);
       }
     }
     return true;
@@ -150,6 +151,7 @@ export class ExpService {
           });
         } else if (await this.expsRepository.create(exp)) {
           await this.sendNotice(user.userId);
+          await this.evaluateGivingBadge(user.userId, exp.expType);
         }
       }
     }
@@ -206,6 +208,7 @@ export class ExpService {
         });
       } else if (await this.expsRepository.create(exp)) {
         await this.sendNotice(user.userId);
+        await this.evaluateGivingBadge(user.userId, exp.expType);
       }
     }
     return true;
@@ -247,6 +250,7 @@ export class ExpService {
         });
       } else if (await this.expsRepository.create(exp)) {
         await this.sendNotice(user.userId);
+        await this.evaluateGivingBadge(user.userId, exp.expType);
       }
     }
     return true;
@@ -257,10 +261,12 @@ export class ExpService {
     if (!user) {
       throw new NotFoundException(`Not Found user_id ${body.employeeId}`);
     }
-    if (!(await this.expsRepository.postExp(user, body))) {
+    const exp = await this.expsRepository.postExp(user, body);
+    if (!exp) {
       return false;
     }
     await this.sendNotice(user.userId);
+    await this.evaluateGivingBadge(user.userId, exp.expType);
     return true;
   }
 
@@ -275,6 +281,7 @@ export class ExpService {
 
   @Transactional()
   public async evaluateGivingBadge(userId: number, expType: string): Promise<void> {
+    expType = expType.charAt(0);
     switch (expType) {
       case 'H': // [인사평가]
         let isSGradeInH1H2 = false; // 인사평가에서 작년 상/하반기 둘다 S 받은 경우
