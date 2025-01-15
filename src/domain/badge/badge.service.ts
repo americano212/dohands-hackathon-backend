@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserService } from 'src/shared/user/user.service';
 import { BadgeRepository } from './badge.repository';
 import { Transactional } from 'typeorm-transactional';
-import { BadgeCode } from './badge.enum';
+import { BadgeCode, BadgeTitle } from './badge.enum';
 import { NoticeService } from 'src/shared/notice/providers';
 import { SendNoticeDto } from 'src/shared/notice/providers/dto';
 
@@ -26,7 +26,7 @@ export class BadgeService {
     const isExist = userBadgeCodeList.includes(badgeCode);
     if (isExist) return true;
     const userBadge = await this.badgesRepository.create(badgeCode, user);
-    if (userBadge) await this.sendNewBadgeNotice(userId); // 뱃지 추가시 알림 전송
+    if (userBadge) await this.sendNewBadgeNotice(userId, badgeCode as BadgeCode); // 뱃지 추가시 알림 전송
     return userBadge ? true : false;
   }
 
@@ -37,12 +37,17 @@ export class BadgeService {
     return isValid;
   }
 
-  private async sendNewBadgeNotice(userId: number): Promise<boolean> {
+  private async sendNewBadgeNotice(userId: number, badgeCode: BadgeCode): Promise<boolean> {
+    const badegTitle = this.getBadgeTitle(badgeCode);
     const sendNoticeData: SendNoticeDto = {
       userIdList: [userId],
-      title: '새로운 뱃지를 획득하셨습니다!',
-      body: '프로필 설정에서 새로운 뱃지를 확인해 보세요.',
+      title: '새로운 배지가 도착했어요!',
+      body: `${badegTitle} 배지 획득하였습니다. 프로필에서 확인해보세요.`,
     };
     return await this.notice.sendNotice(sendNoticeData);
+  }
+
+  private getBadgeTitle(badgeCode: BadgeCode): BadgeTitle {
+    return BadgeTitle[badgeCode as keyof typeof BadgeCode];
   }
 }

@@ -6,3 +6,12 @@ export enum BadgeCode {
   COMPANY_PROJECT_OVER_5 = 'COMPANY_PROJECT_OVER_5',
   MONTH_SPECIAL_JOB_OVER_6 = 'MONTH_SPECIAL_JOB_OVER_6',
 }
+
+export enum BadgeTitle {
+  ANNUAL_MVP_2024 = '2024 MVP',
+  S_GRADE_H1_H2 = '빛나는 인재상',
+  JOB_EXP_OVER_1700 = '찰떡 콜라보',
+  EXP_EVERY_MONTH_FOR_A_YEAR = '월라운더',
+  COMPANY_PROJECT_OVER_5 = '혁신의 주역',
+  MONTH_SPECIAL_JOB_OVER_6 = '열정의 불꽃',
+}
