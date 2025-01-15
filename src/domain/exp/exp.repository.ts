@@ -256,6 +256,7 @@ export class ExpsRepository {
       .where('exp.user = :userId', { userId: userId })
       .andWhere('exp.expType = :expType', { expType: `H${quarter}` })
       .andWhere('YEAR(exp.expAt) = :year', { year: year })
+      .orderBy('exp.expAt', 'DESC')
       .getOne();
   }
 
@@ -355,7 +356,7 @@ export class ExpsRepository {
       .getExists();
   }
 
-  public async postExp(user: User, body: InsertExpDto): Promise<boolean> {
+  public async postExp(user: User, body: InsertExpDto): Promise<Exp> {
     const newExp = this.expsRepository.create({
       user: user,
       questName: body.questName,
@@ -368,8 +369,6 @@ export class ExpsRepository {
       achieveGrade: body.achieveGrade,
     });
 
-    await this.expsRepository.save(newExp);
-
-    return true;
+    return await this.expsRepository.save(newExp);
   }
 }

@@ -91,14 +91,16 @@ export class ExpService {
       const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
 
       if (isExist) {
-        await this.expsRepository.updatePerformance(exp.googleSheetId, exp.expType, {
+        const result = await this.expsRepository.updatePerformance(exp.googleSheetId, exp.expType, {
           user: exp.user,
           expAt: exp.expAt,
           exp: exp.exp,
           achieveGrade: exp.achieveGrade,
         });
+        if (result) await this.evaluateGivingBadge(user.userId, exp.expType);
       } else if (await this.expsRepository.create(exp)) {
-        this.sendNotice(user.userId);
+        await this.sendNotice(user.userId);
+        await this.evaluateGivingBadge(user.userId, exp.expType);
       }
     }
     return true;
@@ -141,15 +143,17 @@ export class ExpService {
         const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
 
         if (isExist) {
-          await this.expsRepository.updateJobQuest(exp.googleSheetId, exp.expType, {
+          const result = await this.expsRepository.updateJobQuest(exp.googleSheetId, exp.expType, {
             expAt: exp.expAt,
             exp: exp.exp,
             period: exp.period,
             week: exp.week,
             achieveGrade: exp.achieveGrade,
           });
+          if (result) await this.evaluateGivingBadge(user.userId, exp.expType);
         } else if (await this.expsRepository.create(exp)) {
           await this.sendNotice(user.userId);
+          await this.evaluateGivingBadge(user.userId, exp.expType);
         }
       }
     }
@@ -195,7 +199,7 @@ export class ExpService {
       const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
 
       if (isExist) {
-        await this.expsRepository.updateLeaderQuest(exp.googleSheetId, exp.expType, {
+        const result = await this.expsRepository.updateLeaderQuest(exp.googleSheetId, exp.expType, {
           user: exp.user,
           week: exp.week,
           expAt: exp.expAt,
@@ -204,8 +208,10 @@ export class ExpService {
           questName: exp.questName,
           achieveGrade: exp.achieveGrade,
         });
+        if (result) await this.evaluateGivingBadge(user.userId, exp.expType);
       } else if (await this.expsRepository.create(exp)) {
         await this.sendNotice(user.userId);
+        await this.evaluateGivingBadge(user.userId, exp.expType);
       }
     }
     return true;
@@ -237,16 +243,22 @@ export class ExpService {
       const isExist = await this.expsRepository.isExistGoogleSheetId(exp);
 
       if (isExist) {
-        await this.expsRepository.updateCompanyQuest(exp.googleSheetId, exp.expType, {
-          user: exp.user,
-          expAt: exp.expAt,
-          exp: exp.exp,
-          period: exp.period,
-          questName: exp.questName,
-          content: exp.content,
-        });
+        const result = await this.expsRepository.updateCompanyQuest(
+          exp.googleSheetId,
+          exp.expType,
+          {
+            user: exp.user,
+            expAt: exp.expAt,
+            exp: exp.exp,
+            period: exp.period,
+            questName: exp.questName,
+            content: exp.content,
+          },
+        );
+        if (result) await this.evaluateGivingBadge(user.userId, exp.expType);
       } else if (await this.expsRepository.create(exp)) {
         await this.sendNotice(user.userId);
+        await this.evaluateGivingBadge(user.userId, exp.expType);
       }
     }
     return true;
@@ -257,10 +269,12 @@ export class ExpService {
     if (!user) {
       throw new NotFoundException(`Not Found user_id ${body.employeeId}`);
     }
-    if (!(await this.expsRepository.postExp(user, body))) {
+    const exp = await this.expsRepository.postExp(user, body);
+    if (!exp) {
       return false;
     }
     await this.sendNotice(user.userId);
+    await this.evaluateGivingBadge(user.userId, exp.expType);
     return true;
   }
 
@@ -275,11 +289,12 @@ export class ExpService {
 
   @Transactional()
   public async evaluateGivingBadge(userId: number, expType: string): Promise<void> {
+    expType = expType.charAt(0);
     switch (expType) {
       case 'H': // [인사평가]
         let isSGradeInH1H2 = false; // 인사평가에서 작년 상/하반기 둘다 S 받은 경우
         const h1 = await this.expsRepository.getPerformance(userId, 1, true);
-        const h2 = await this.expsRepository.getPerformance(userId, 1, true);
+        const h2 = await this.expsRepository.getPerformance(userId, 2, true);
         if (h1?.achieveGrade === 'S등급' && h2?.achieveGrade === 'S등급') isSGradeInH1H2 = true;
         if (isSGradeInH1H2)
           await this.badgeService.giveBadgeToUser(userId, BadgeCode.S_GRADE_H1_H2);
