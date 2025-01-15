@@ -9,6 +9,8 @@ import { PerformanceFromGSSDto } from './performance/dto';
 import { CompanyQuestFromGSSDto } from './company-quest/dto/company-quest-from-gss.dto';
 import { JobQuestFromGSSDto } from './job-quest/dto';
 import { LeaderQuestFromGSSDto } from './leader-quest/dto';
+import { NoticeService } from 'src/shared/notice/providers';
+import { SendNoticeDto } from 'src/shared/notice/providers/dto';
 
 @Injectable()
 export class ExpService {
@@ -16,6 +18,7 @@ export class ExpService {
     private readonly usersRepository: UsersRepository,
     private readonly expsRepository: ExpsRepository,
     private readonly gssService: GoogleSheetService,
+    private readonly notice: NoticeService,
   ) {}
 
   // limit : 제한
@@ -39,12 +42,12 @@ export class ExpService {
   @Cron(CronExpression.EVERY_MINUTE)
   public async getExpsFromGSS(): Promise<boolean> {
     //TODO: 하드 코딩된부분 고치기!
-    const h1Range = 'B10:E16';
-    const h2Range = 'H10:K16';
-    const jobRange = 'B16:C67';
+    const h1Range = 'B10:E100';
+    const h2Range = 'H10:K100';
+    const jobRange = 'B16:C100';
     const jobInfo = 'B13:J13';
-    const leaderRange = 'B10:H31';
-    const companyRange = 'B8:I12';
+    const leaderRange = 'B10:H100';
+    const companyRange = 'B8:I100';
     // 상반기 인사평가
     await this.processPerformanceGSS('인사평가', h1Range, 1);
     // 하반기 인사평가
@@ -90,8 +93,8 @@ export class ExpService {
           exp: exp.exp,
           achieveGrade: exp.achieveGrade,
         });
-      } else {
-        await this.expsRepository.create(exp);
+      } else if (await this.expsRepository.create(exp)) {
+        this.sendNotice(user.userId);
       }
     }
     return true;
@@ -141,12 +144,12 @@ export class ExpService {
             week: exp.week,
             achieveGrade: exp.achieveGrade,
           });
-        } else {
-          await this.expsRepository.create(exp);
+        } else if (await this.expsRepository.create(exp)) {
+          await this.sendNotice(user.userId);
         }
       }
     }
-    return tabName + range ? true : false;
+    return true;
   }
 
   public async processLeaderQuestGSS(tabName: string, range: string): Promise<boolean> {
@@ -197,11 +200,11 @@ export class ExpService {
           questName: exp.questName,
           achieveGrade: exp.achieveGrade,
         });
-      } else {
-        await this.expsRepository.create(exp);
+      } else if (await this.expsRepository.create(exp)) {
+        await this.sendNotice(user.userId);
       }
     }
-    return tabName + range ? true : false;
+    return true;
   }
 
   public async processCompanyQuestGSS(tabName: string, range: string): Promise<boolean> {
@@ -238,8 +241,8 @@ export class ExpService {
           questName: exp.questName,
           content: exp.content,
         });
-      } else {
-        await this.expsRepository.create(exp);
+      } else if (await this.expsRepository.create(exp)) {
+        await this.sendNotice(user.userId);
       }
     }
     return true;
@@ -250,6 +253,19 @@ export class ExpService {
     if (!user) {
       throw new NotFoundException(`Not Found user_id ${body.employeeId}`);
     }
-    return await this.expsRepository.postExp(user, body);
+    if (!(await this.expsRepository.postExp(user, body))) {
+      return false;
+    }
+    await this.sendNotice(user.userId);
+    return true;
+  }
+
+  private async sendNotice(userId: number): Promise<boolean> {
+    const sendNoticeData: SendNoticeDto = {
+      userIdList: [userId],
+      title: '축하합니다! 새로운 두둥 경험치를 받았어요!',
+      body: '새로운 두둥 경험치가 추가되었습니다. 다음 미션도 도전하세요!',
+    };
+    return await this.notice.sendNotice(sendNoticeData);
   }
 }
