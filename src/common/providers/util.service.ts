@@ -58,7 +58,7 @@ export class UtilService {
 
       // 주의 종료 날짜가 현재 년도를 넘어가면 조정
       if (weekEnd > endDate) {
-        weekEnd.setDate(endDate.getDate());
+        weekEnd.setTime(endDate.getTime()); // endDate의 전체 값을 복사
       }
 
       // 속하는 월 계산: 시작 날짜와 종료 날짜의 월별 날 수 비교
