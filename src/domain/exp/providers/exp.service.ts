@@ -93,14 +93,8 @@ export class ExpService {
           exp: exp.exp,
           achieveGrade: exp.achieveGrade,
         });
-      } else {
-        await this.expsRepository.create(exp);
-        const sendNoticeData: SendNoticeDto = {
-          userIdList: [user.userId],
-          title: '축하합니다! 새로운 두둥 경험치를 받았어요!',
-          body: '새로운 두둥 경험치가 추가되었습니다. 다음 미션도 도전하세요!',
-        };
-        await this.notice.sendNotice(sendNoticeData);
+      } else if (await this.expsRepository.create(exp)) {
+        this.sendNotice(user.userId);
       }
     }
     return true;
@@ -150,18 +144,12 @@ export class ExpService {
             week: exp.week,
             achieveGrade: exp.achieveGrade,
           });
-        } else {
-          await this.expsRepository.create(exp);
-          const sendNoticeData: SendNoticeDto = {
-            userIdList: [user.userId],
-            title: '축하합니다! 새로운 두둥 경험치를 받았어요!',
-            body: '새로운 두둥 경험치가 추가되었습니다. 다음 미션도 도전하세요!',
-          };
-          await this.notice.sendNotice(sendNoticeData);
+        } else if (await this.expsRepository.create(exp)) {
+          await this.sendNotice(user.userId);
         }
       }
     }
-    return tabName + range ? true : false;
+    return true;
   }
 
   public async processLeaderQuestGSS(tabName: string, range: string): Promise<boolean> {
@@ -212,17 +200,11 @@ export class ExpService {
           questName: exp.questName,
           achieveGrade: exp.achieveGrade,
         });
-      } else {
-        await this.expsRepository.create(exp);
-        const sendNoticeData: SendNoticeDto = {
-          userIdList: [user.userId],
-          title: '축하합니다! 새로운 두둥 경험치를 받았어요!',
-          body: '새로운 두둥 경험치가 추가되었습니다. 다음 미션도 도전하세요!',
-        };
-        await this.notice.sendNotice(sendNoticeData);
+      } else if (await this.expsRepository.create(exp)) {
+        await this.sendNotice(user.userId);
       }
     }
-    return tabName + range ? true : false;
+    return true;
   }
 
   public async processCompanyQuestGSS(tabName: string, range: string): Promise<boolean> {
@@ -259,14 +241,8 @@ export class ExpService {
           questName: exp.questName,
           content: exp.content,
         });
-      } else {
-        await this.expsRepository.create(exp);
-        const sendNoticeData: SendNoticeDto = {
-          userIdList: [user.userId],
-          title: '축하합니다! 새로운 두둥 경험치를 받았어요!',
-          body: '새로운 두둥 경험치가 추가되었습니다. 다음 미션도 도전하세요!',
-        };
-        await this.notice.sendNotice(sendNoticeData);
+      } else if (await this.expsRepository.create(exp)) {
+        await this.sendNotice(user.userId);
       }
     }
     return true;
@@ -277,6 +253,19 @@ export class ExpService {
     if (!user) {
       throw new NotFoundException(`Not Found user_id ${body.employeeId}`);
     }
-    return await this.expsRepository.postExp(user, body);
+    if (!(await this.expsRepository.postExp(user, body))) {
+      return false;
+    }
+    await this.sendNotice(user.userId);
+    return true;
+  }
+
+  private async sendNotice(userId: number): Promise<boolean> {
+    const sendNoticeData: SendNoticeDto = {
+      userIdList: [userId],
+      title: '축하합니다! 새로운 두둥 경험치를 받았어요!',
+      body: '새로운 두둥 경험치가 추가되었습니다. 다음 미션도 도전하세요!',
+    };
+    return await this.notice.sendNotice(sendNoticeData);
   }
 }
