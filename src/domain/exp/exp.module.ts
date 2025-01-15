@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExpsRepository } from './exp.repository';
 import * as providers from './providers';
 import { UserModule } from 'src/shared/user/user.module';
+import { BadgeModule } from '../badge/badge.module';
 import { NoticeModule } from 'src/shared/notice/notice.module';
 
 const services = [...Object.values(providers), ExpsRepository];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Exp]), UserModule, NoticeModule],
+  imports: [TypeOrmModule.forFeature([Exp]), UserModule, BadgeModule, NoticeModule],
   controllers: [ExpController],
   providers: services,
   exports: services,
