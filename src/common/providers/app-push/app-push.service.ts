@@ -46,13 +46,9 @@ export class AppPushService {
     });
 
     const results = await Promise.allSettled(sendPromises); // 모든 작업이 완료될 때까지 기다림
-    console.log(results);
     // 성공과 실패 결과를 분리
     const successes = results.filter((result) => result.status === 'fulfilled');
     const failures = results.filter((result) => result.status === 'rejected');
-
-    console.log('Successful messages:', successes);
-    console.log('Failed messages:', failures);
 
     return {
       isSuccess: failures.length === 0,
