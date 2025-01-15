@@ -177,8 +177,7 @@ export class UserService {
       const totalExpLastYear = Number(value[11].replace(/,/g, ''));
 
       const jobPosition = JobPosition[jobPositionText];
-      console.log(jobPositionText);
-      console.log(jobPosition);
+
       const userInfo: UserInfoFromGSSDto = {
         googleSheetId: `${idx + 10}`,
         employeeId,

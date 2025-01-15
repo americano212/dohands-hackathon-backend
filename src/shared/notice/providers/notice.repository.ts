@@ -16,6 +16,7 @@ export class NoticeRepository {
     return await this.noticesRepository.find({
       relations: { user: true },
       where: { user: { userId: userId } },
+      order: { createdAt: { direction: 'DESC' } },
     });
   }
 }
