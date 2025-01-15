@@ -13,9 +13,7 @@ export class BadgeService {
 
   @Transactional()
   public async giveBadgeToUser(userId: number, badgeCode: string): Promise<boolean> {
-    const badgeCodesList = Object.values(BadgeCode) as string[];
-    const isValid = badgeCodesList.includes(badgeCode);
-    if (!isValid) throw new NotFoundException(`Not Found ${badgeCode}, invalid BadgeCode`);
+    await this.validateBadgeCode(badgeCode);
 
     const user = await this.user.findOne(userId);
     const userBadgeCodeList: string[] = [];
@@ -26,5 +24,12 @@ export class BadgeService {
     if (isExist) return true;
     const userBadge = await this.badgesRepository.create(badgeCode, user);
     return userBadge ? true : false;
+  }
+
+  private async validateBadgeCode(badgeCode: string): Promise<boolean> {
+    const badgeCodesList = Object.values(BadgeCode) as string[];
+    const isValid = badgeCodesList.includes(badgeCode);
+    if (!isValid) throw new NotFoundException(`Not Found ${badgeCode}, invalid BadgeCode`);
+    return isValid;
   }
 }
