@@ -323,7 +323,7 @@ export class ExpService {
       case 'L': // [리더부여]
         let isMonthSpecialJobOver6 = false; //  월 특근 미션 경험치 6회 이상 획득시
         const leaderQuestResults = await this.expsRepository.getLeaderQuest(userId, '월특근');
-        if (leaderQuestResults.length >= 6) isMonthSpecialJobOver6 = true;
+        if (leaderQuestResults[0].length >= 6) isMonthSpecialJobOver6 = true;
         if (isMonthSpecialJobOver6)
           await this.badgeService.giveBadgeToUser(userId, BadgeCode.MONTH_SPECIAL_JOB_OVER_6);
         return;
