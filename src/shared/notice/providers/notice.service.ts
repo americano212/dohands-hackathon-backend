@@ -48,7 +48,7 @@ export class NoticeService {
       const user = await this.user.findOne(userId);
       await this.noticesRepository.create({
         title: sendNoticeData.title,
-        body: sendNoticeData.body,
+        body: sendNoticeData.saveBody ? sendNoticeData.saveBody : sendNoticeData.body,
         user: user,
       });
     });
