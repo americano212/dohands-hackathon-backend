@@ -74,7 +74,14 @@ export class ExpService {
     const values = await this.gssService.getValueFromSheet({ tabName, range });
     for (let idx = 0; idx < values.length; idx++) {
       const value = values[idx];
-      if (value[0] === '' || value[1] === '' || value[2] === '' || value[3] === '') continue;
+      if (
+        value.length < 4 ||
+        value[0] === '' ||
+        value[1] === '' ||
+        value[2] === '' ||
+        value[3] === ''
+      )
+        continue;
       const user = await this.usersRepository.findOneByEmployeeId(value[0]);
       if (!user) {
         throw new NotFoundException(`Not Found user_id ${value[0]}`);
@@ -118,8 +125,9 @@ export class ExpService {
 
     for (let idx = 0; idx < values.length; idx++) {
       const value = values[idx];
-      if (value[1] === '0') continue;
+      if (value.length < 2 || value[1] === '0') continue;
       for (let i = 0; i < users.length; i++) {
+        if (infos[0].length < 7) continue;
         const user = users[i];
         const expAt = new Date();
         let week = null;
@@ -165,6 +173,7 @@ export class ExpService {
     for (let idx = 0; idx < values.length; idx++) {
       const value = values[idx];
       if (
+        value.length < 7 ||
         (value[0] === '' && value[1] === '') ||
         value[2] === '' ||
         value[4] === '' ||
@@ -221,7 +230,15 @@ export class ExpService {
     const values = await this.gssService.getValueFromSheet({ tabName, range });
     for (let idx = 0; idx < values.length; idx++) {
       const value = values[idx];
-      if (value[2] === '' || value[4] === '' || value[5] === '' || value[7] === '') continue;
+      if (
+        value.length < 8 ||
+        value[2] === '' ||
+        value[4] === '' ||
+        value[5] === '' ||
+        value[7] === ''
+      )
+        continue;
+
       const user = await this.usersRepository.findOneByEmployeeId(value[2]);
       if (!user) {
         throw new NotFoundException(`Not Found user_id ${value[2]}`);
