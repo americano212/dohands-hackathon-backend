@@ -17,17 +17,17 @@ type JobFamily = 'F' | 'B' | 'G' | 'T';
 // 레벨 테이블
 const levelTable: Record<JobFamily, { level: string; exp: number }[]> = {
   F: [
-    { level: 'F1-Ⅰ', exp: 0 },
-    { level: 'F1-Ⅱ', exp: 13500 },
-    { level: 'F2-Ⅰ', exp: 27000 },
-    { level: 'F2-Ⅱ', exp: 39000 },
-    { level: 'F2-Ⅲ', exp: 51000 },
-    { level: 'F3-Ⅰ', exp: 63000 },
-    { level: 'F3-Ⅱ', exp: 78000 },
-    { level: 'F3-Ⅲ', exp: 93000 },
-    { level: 'F4-Ⅰ', exp: 108000 },
-    { level: 'F4-Ⅱ', exp: 126000 },
-    { level: 'F4-Ⅲ', exp: 144000 },
+    { level: 'F1-I', exp: 0 },
+    { level: 'F1-II', exp: 13500 },
+    { level: 'F2-I', exp: 27000 },
+    { level: 'F2-II', exp: 39000 },
+    { level: 'F2-III', exp: 51000 },
+    { level: 'F3-I', exp: 63000 },
+    { level: 'F3-II', exp: 78000 },
+    { level: 'F3-III', exp: 93000 },
+    { level: 'F4-I', exp: 108000 },
+    { level: 'F4-II', exp: 126000 },
+    { level: 'F4-III', exp: 144000 },
     { level: 'F5', exp: 162000 },
   ],
   B: [
