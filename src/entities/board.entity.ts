@@ -13,7 +13,7 @@ export class Board extends CoreEntity {
   public boardId!: number;
 
   @ApiProperty({ example: '10', description: '구글 스프레드시트 index (행 번호)' })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', nullable: true, unique: true })
   @IsString()
   public googleSheetId?: string | null;
 
