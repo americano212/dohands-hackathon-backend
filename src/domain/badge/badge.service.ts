@@ -42,7 +42,8 @@ export class BadgeService {
     const sendNoticeData: SendNoticeDto = {
       userIdList: [userId],
       title: '새로운 배지가 도착했어요!',
-      body: `${badegTitle} 배지를 획득하였습니다. 프로필에서 확인해보세요!`,
+      body: `방금 새로운 배지가 도착했어요! 지금 확인해보세요!`,
+      saveBody: `${badegTitle} 배지를 획득하였습니다. 프로필에서 확인해보세요!`,
     };
     return await this.notice.sendNotice(sendNoticeData);
   }

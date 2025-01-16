@@ -63,4 +63,11 @@ export class UserController {
   public async giveRoleToUser(@Body() data: GiveRoleToUserDto): Promise<SuccessResponseDto> {
     return { isSuccess: await this.user.giveRole(data) };
   }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '로그아웃 API (디바이스 토큰 초기화)' })
+  @Post('/logout')
+  public async logout(@UserId() userId: number): Promise<SuccessResponseDto> {
+    return { isSuccess: await this.user.clearFcmToken(userId) };
+  }
 }

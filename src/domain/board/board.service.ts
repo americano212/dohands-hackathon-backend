@@ -62,7 +62,6 @@ export class BoardService {
     const tabName = 'notice_board';
     const range = 'C7:D100'; // TODO 레거시
     const values = await this.gssService.getValueFromSheet({ tabName, range });
-
     for (let idx = 0; idx < values.length; idx++) {
       const value = values[idx];
       if (value[0] === '') continue; // No title

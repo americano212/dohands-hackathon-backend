@@ -79,16 +79,13 @@ export class ExpsRepository {
       .getRawOne()
       .then((result) => Number(result.totalExp) || 0); // 합계가 없을 경우 0으로 처리
 
-    /*
-    // 옛날부터 작년까지의 경험치 합계 가져오기
     const lastYearExp = await this.expsRepository
       .createQueryBuilder('exp')
       .select('SUM(exp.exp)', 'totalExp')
-      .where('exp.userId = :userId', { userId })
-      .andWhere('YEAR(exp.expAt) <= :year', { year: lastYear }) // 작년 이하 조건
+      .where('exp.user = :userId', { userId: user })
+      .andWhere('YEAR(exp.expAt) < :year', { year: currentYear })
       .getRawOne()
-      .then((result) => Number(result.totalExp) || 0);
-    */
+      .then((result) => Number(result.totalExp) || 0); // 합계가 없을 경우 0으로 처리
 
     // 연도별 경험치 가져오기
     const expList = await this.expsRepository
@@ -113,7 +110,7 @@ export class ExpsRepository {
     }));
 
     const totalExp = formattedExpList.reduce((sum, item) => sum + item.exp, 0);
-    const lastYearExp = totalExp - currentYearExp;
+    // const lastYearExp = totalExp - currentYearExp;
 
     if (!jobFamily || !['F', 'B', 'G', 'T'].includes(jobFamily)) {
       jobFamily = 'F';
@@ -268,7 +265,7 @@ export class ExpsRepository {
       .where('exp.user = :userId', { userId: userId })
       .andWhere('exp.expType = :expType', { expType: 'C' })
       .andWhere('YEAR(exp.expAt) = :year', { year: currentYear })
-      .orderBy('exp.expAt', 'ASC')
+      .orderBy('exp.expAt', 'DESC')
       .getMany();
   }
 
