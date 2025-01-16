@@ -115,4 +115,9 @@ export class UsersRepository {
     );
     return result.affected ? true : false;
   }
+
+  public async setFcmTokenNull(userId: number): Promise<boolean> {
+    const result = await this.usersRepository.update({ userId: userId }, { fcmToken: null });
+    return result.affected ? true : false;
+  }
 }
