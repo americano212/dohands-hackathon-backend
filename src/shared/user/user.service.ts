@@ -213,4 +213,9 @@ export class UserService {
 
     return true;
   }
+
+  public async clearFcmToken(userId: number): Promise<boolean> {
+    await this.findOne(userId);
+    return await this.usersRepository.setFcmTokenNull(userId);
+  }
 }
