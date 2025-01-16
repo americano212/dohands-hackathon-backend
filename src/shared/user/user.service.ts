@@ -8,7 +8,12 @@ import { Transactional } from 'typeorm-transactional';
 
 import { UsersRepository } from './user.repository';
 import { RoleService } from '../role/providers';
-import { GetUserInfoResponseDto, GiveRoleToUserDto, UserInfoFromGSSDto } from './dto';
+import {
+  BadgeCodeWithCreatedAt,
+  GetUserInfoResponseDto,
+  GiveRoleToUserDto,
+  UserInfoFromGSSDto,
+} from './dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GoogleSheetService, NotUserId } from 'src/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -42,9 +47,9 @@ export class UserService {
 
   public async getUserInfo(userId: number): Promise<GetUserInfoResponseDto> {
     const user = await this.findOne(userId);
-    const possibleBadgeCodeList: string[] = [];
+    const possibleBadgeCodeList: BadgeCodeWithCreatedAt[] = [];
     user.badges?.forEach((badge) => {
-      possibleBadgeCodeList.push(badge.badgeCode);
+      possibleBadgeCodeList.push({ badgeCode: badge.badgeCode, createdAt: badge.createdAt });
     });
     const userInfo: GetUserInfoResponseDto = {
       employeeId: user.employeeId,
