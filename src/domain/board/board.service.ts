@@ -80,7 +80,7 @@ export class BoardService {
       const release = await mutex.acquire();
       try {
         const isExist = await this.boardsRepository.isExistGoogleSheetId(board.googleSheetId);
-  
+
         if (isExist) {
           // ! 있었는데 아예 지워져버리는 경우는 제외됨(삭제 불가)
           // 이미 존재할 때는 글 내용만 업데이트
@@ -99,11 +99,10 @@ export class BoardService {
           };
           await this.notice.sendNotice(sendNoticeData);
         }
-      }  finally {
+      } finally {
         // 잠금 해제
         release();
       }
-
     }
 
     return true;
