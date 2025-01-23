@@ -86,10 +86,6 @@ export class UsersRepository {
     return await this.usersRepository.exists({ where: { username: username } });
   }
 
-  public async isExistId(id: string): Promise<boolean> {
-    return await this.usersRepository.exists({ where: { id: id } });
-  }
-
   public async isExistGoogleSheetId(googleSheetId: string): Promise<boolean> {
     return await this.usersRepository.exists({ where: { googleSheetId: googleSheetId } });
   }
