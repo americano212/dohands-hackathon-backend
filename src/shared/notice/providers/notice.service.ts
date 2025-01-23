@@ -56,7 +56,7 @@ export class NoticeService {
   }
 
   @Transactional()
-  public async noticeListByUserId(userId: number): Promise<GetNoticeListDto> {
+  public async getNoticeListByUserId(userId: number): Promise<GetNoticeListDto> {
     const user = await this.user.findOne(userId);
     const results = await this.noticesRepository.findAllByUserId(user.userId);
     const noticeList: GetNoticeDto[] = [];

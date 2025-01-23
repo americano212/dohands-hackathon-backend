@@ -132,7 +132,6 @@ export class UserService {
   }
 
   private async updatePasswordToGSS(userId: number, password: string) {
-    // userId로 부터 googleSheetId 불러오기
     const user = await this.findOne(userId);
     const { googleSheetId } = user;
     if (!googleSheetId) throw new NotFoundException(`Not Found googleSheetId user_id ${userId}`);
