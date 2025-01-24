@@ -22,7 +22,10 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "dev:docker:up": "docker-compose -f ./docker/mysql/docker-compose.dev.yml up -d",
-    "dev:docker:down": "docker-compose -f ./docker/mysql/docker-compose.dev.yml down"
+    "dev:docker:down": "docker-compose -f ./docker/mysql/docker-compose.dev.yml down",
+    "docker:build": "docker build -t nestjs-handsup-api .",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",

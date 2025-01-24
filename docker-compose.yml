@@ -1,0 +1,15 @@
+services:
+  nestjs-app:
+    container_name: nestjs-handsup-api
+    build:
+      context: .
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    external: true

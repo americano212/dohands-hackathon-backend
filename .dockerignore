@@ -1,0 +1,15 @@
+.ebextensions
+.github
+.vscode
+dist
+docker
+logs
+node_modules
+.env.example
+.git
+.gitignore
+.prettierrc
+Dockerfile
+docker-compose.yml
+LICENSE
+README.md
