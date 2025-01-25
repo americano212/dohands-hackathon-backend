@@ -52,5 +52,6 @@ jobs:
             cd Docker/service
             ls -al
             docker load < nestjs-handsup-api.tar
+            rm nestjs-handsup-api.tar
             docker-compose down || true
             docker-compose up -d
