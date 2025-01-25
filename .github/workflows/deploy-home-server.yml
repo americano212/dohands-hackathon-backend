@@ -1,0 +1,54 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: nestjs-handsup-api
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          touch .env
+          cat << EOF >> .env
+          ${{ secrets.ENV }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t $IMAGE_NAME:latest .
+          docker save $IMAGE_NAME:latest -o $IMAGE_NAME.tar
+
+      - name: Copy .env file to Raspberry Pi
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.RASPBERRY_HOST }}
+          username: ${{ secrets.RASPBERRY_USERNAME }}
+          password: ${{ secrets.RASPBERRY_PASSWORD }}
+          port: ${{ secrets.RASPBERRY_PORT }}
+          source: |
+            $IMAGE_NAME.tar
+            docker-compose.yml
+            .env
+          target: ~/Docker/service
+
+      - name: Deploy Docker Image on Remote Server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.RASPBERRY_HOST }}
+          username: ${{ secrets.RASPBERRY_USERNAME }}
+          password: ${{ secrets.RASPBERRY_PASSWORD }}
+          port: ${{ secrets.RASPBERRY_PORT }}
+          script: |
+            cd Docker/service
+            docker load < $IMAGE_NAME.tar
+            docker-compose down || true
+            docker-compose up -d
