@@ -3,7 +3,7 @@ name: Build and Deploy Docker Image
 on:
   push:
     branches:
-      - deploy-test
+      - main
 
 jobs:
   build-and-deploy:
@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.RASPBERRY_PASSWORD }}
           port: ${{ secrets.RASPBERRY_PORT }}
           source: 'nestjs-handsup-api.tar,Dockerfile,docker-compose.yml,.env'
-          target: '~/Docker/service'
+          target: '~/Docker/service/handsup-api'
 
       - name: Deploy Docker Image on Remote Server
         uses: appleboy/ssh-action@v1.2.0
@@ -49,7 +49,7 @@ jobs:
           password: ${{ secrets.RASPBERRY_PASSWORD }}
           port: ${{ secrets.RASPBERRY_PORT }}
           script: |
-            cd Docker/service
+            cd Docker/service/handsup-api
             ls -al
             docker load < nestjs-handsup-api.tar
             rm nestjs-handsup-api.tar
