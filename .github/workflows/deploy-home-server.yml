@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.RASPBERRY_USERNAME }}
           password: ${{ secrets.RASPBERRY_PASSWORD }}
           port: ${{ secrets.RASPBERRY_PORT }}
-          source: '$IMAGE_NAME.tar,docker-compose.yml,.env'
+          source: '$IMAGE_NAME.tar,Dockerfile,docker-compose.yml,.env'
           target: '~/Docker/service'
 
       - name: Deploy Docker Image on Remote Server
