@@ -24,10 +24,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t $IMAGE_NAME:latest .
+          docker build --no-cache -t $IMAGE_NAME:latest .
+          docker images
           docker save $IMAGE_NAME:latest -o $IMAGE_NAME.tar
 
-      - name: Copy .env file to Raspberry Pi
+      - name: Copy file to Raspberry Pi
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.RASPBERRY_HOST }}
