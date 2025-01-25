@@ -27,6 +27,7 @@ jobs:
           docker build --no-cache -t $IMAGE_NAME:latest .
           docker images
           docker save $IMAGE_NAME:latest -o $IMAGE_NAME.tar
+          ls -al
 
       - name: Copy file to Raspberry Pi
         uses: appleboy/scp-action@v0.1.7
@@ -35,11 +36,8 @@ jobs:
           username: ${{ secrets.RASPBERRY_USERNAME }}
           password: ${{ secrets.RASPBERRY_PASSWORD }}
           port: ${{ secrets.RASPBERRY_PORT }}
-          source: |
-            $IMAGE_NAME.tar
-            docker-compose.yml
-            .env
-          target: ~/Docker/service
+          source: '$IMAGE_NAME.tar,docker-compose.yml,.env'
+          target: '~/Docker/service'
 
       - name: Deploy Docker Image on Remote Server
         uses: appleboy/ssh-action@v1.2.0
