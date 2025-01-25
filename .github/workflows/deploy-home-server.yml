@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build --no-cache -t $IMAGE_NAME:latest .
+          docker build -t $IMAGE_NAME:latest .
           docker images
           docker save $IMAGE_NAME:latest -o $IMAGE_NAME.tar
           ls -al
@@ -48,6 +48,8 @@ jobs:
           port: ${{ secrets.RASPBERRY_PORT }}
           script: |
             cd Docker/service
-            docker load < $IMAGE_NAME.tar
-            docker-compose down || true
-            docker-compose up -d
+            ls -al
+
+# docker load < $IMAGE_NAME.tar
+# docker-compose down || true
+# docker-compose up -d
