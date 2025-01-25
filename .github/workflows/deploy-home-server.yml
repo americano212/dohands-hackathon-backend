@@ -25,7 +25,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker buildx create --use
-          docker buildx build --platform linux/amd64,linux/arm64 -t nestjs-handsup-api .
+          docker buildx build --platform linux/amd64,linux/arm64 -t nestjs-handsup-api . --load
           docker images
           docker save nestjs-handsup-api:latest -o nestjs-handsup-api.tar
           chmod 664 nestjs-handsup-api.tar
