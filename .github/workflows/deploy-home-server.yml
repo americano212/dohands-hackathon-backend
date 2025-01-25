@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t nestjs-handsup-api:latest .
+          docker build --platform linux/arm64 -t nestjs-handsup-api:latest .
           docker images
           docker save nestjs-handsup-api:latest -o nestjs-handsup-api.tar
           chmod 664 nestjs-handsup-api.tar
@@ -48,11 +48,8 @@ jobs:
           password: ${{ secrets.RASPBERRY_PASSWORD }}
           port: ${{ secrets.RASPBERRY_PORT }}
           script: |
-            pwd
-            whoami
             cd Docker/service
             ls -al
-
-# docker load < $IMAGE_NAME.tar
-# docker-compose down || true
-# docker-compose up -d
+            docker load < nestjs-handsup-api.tar
+            docker-compose down || true
+            docker-compose up -d
