@@ -16,7 +16,7 @@ export class SlackService {
 
   public async sendSlackMessage(
     text: string,
-    channel: string = 'webhook-test',
+    channel: string = 'handsup-error-report',
     username: string = 'slack-bot',
   ): Promise<boolean> {
     const url = this.config.get('slack.webhookUrl');

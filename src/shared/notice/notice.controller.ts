@@ -18,7 +18,7 @@ export class NoticeController {
   @ApiResponse({ type: GetNoticeListDto })
   @Get()
   public async getNoticeList(@UserId() userId: number): Promise<GetNoticeListDto> {
-    return await this.notice.noticeListByUserId(userId);
+    return await this.notice.getNoticeListByUserId(userId);
   }
 
   @ApiOperation({ summary: '[TEST] Push 알림 전송 테스트용 API' })

@@ -10,3 +10,10 @@ services:
       - MYSQL_DATABASE=docker-mysql-db
     volumes:
       - ./data:/var/lib/mysql
+    container_name: mysql
+    networks:
+      - docker-network
+
+networks:
+  docker-network:
+    external: true

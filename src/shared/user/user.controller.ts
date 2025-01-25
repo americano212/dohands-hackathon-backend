@@ -8,10 +8,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { GetUserInfoResponseDto, GiveRoleToUserDto, UpdateUserDto } from './dto';
+import { GetUserInfoResponseDto, UpdateUserDto } from './dto';
 import { UserService } from './user.service';
 import { SuccessResponseDto } from 'src/common/dto';
-import { Role, Roles, UserId } from 'src/common';
+import { UserId } from 'src/common';
 
 @ApiTags('User')
 @Controller('user')
@@ -56,12 +56,6 @@ export class UserController {
   @Get('/gss')
   public async forceRefreshGetUserInfoFromGSS(): Promise<SuccessResponseDto> {
     return { isSuccess: await this.user.getUserInfoFromGSS() };
-  }
-
-  @Roles(Role.SuperAdmin)
-  @Post('role')
-  public async giveRoleToUser(@Body() data: GiveRoleToUserDto): Promise<SuccessResponseDto> {
-    return { isSuccess: await this.user.giveRole(data) };
   }
 
   @ApiBearerAuth()
