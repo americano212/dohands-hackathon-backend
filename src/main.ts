@@ -23,14 +23,12 @@ async function bootstrap(): Promise<string> {
     logger: winstonLogger,
   });
 
-  middleware(app);
-
   if (isProduction) app.enable('trust proxy');
 
   const documentConfig = new APIDocument().initializeOptions();
   const document = SwaggerModule.createDocument(app, documentConfig);
   SwaggerModule.setup('/docs', app, document); // http://localhost/docs
-
+  middleware(app);
   app.enableShutdownHooks();
 
   app.useGlobalPipes(
