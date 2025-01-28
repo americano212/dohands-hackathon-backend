@@ -8,7 +8,8 @@ services:
       - .env
     networks:
       - docker-network
-
+    restart: unless-stopped
+    
 networks:
   docker-network:
     external: true
