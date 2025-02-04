@@ -12,7 +12,7 @@
 
 
 ## 🔧 요구 기능
-이미지
+<p align="center"><img src="https://github.com/user-attachments/assets/2dda8f0e-21ad-41ab-8f08-6590698f5f7d" width=600 /></p>
 
 ## 🏃‍♂️ Challenge
 **1. 주최 측의 요구사항으로 웹/앱으로 된 관리자 페이지 대신, 기존에 사용하던 Google Spread Sheet와 연동 되어야했음.**
