@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '../config.service';
 import { AppPushMessageDto, AppPushMessageResponseDto } from './dto';
 import * as admin from 'firebase-admin';
-import { Message } from 'firebase-admin/lib/messaging/messaging-api';
+import { MulticastMessage } from 'firebase-admin/lib/messaging/messaging-api';
 
 @Injectable()
 export class AppPushService {
@@ -28,32 +28,30 @@ export class AppPushService {
     console.log(message);
     const tokens = message.targetDevicesFcmToken;
 
-    const sendPromises = tokens.map(async (token) => {
-      const fcmPayload: Message = {
-        token: token,
-        notification: {
-          title: message.notification.title,
-          body: message.notification.body,
-        },
-      };
-      try {
-        const result = await admin.messaging().send(fcmPayload);
-        console.log('send-message-result', result);
-        return { success: true, token }; // 성공한 토큰 반환
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    });
+    if (tokens.length === 0) {
+      console.log('No device tokens provided');
+      return { isSuccess: false, successMsgCount: 0, failMsgCount: 0 };
+    }
 
-    const results = await Promise.allSettled(sendPromises); // 모든 작업이 완료될 때까지 기다림
-    // 성공과 실패 결과를 분리
-    const successes = results.filter((result) => result.status === 'fulfilled');
-    const failures = results.filter((result) => result.status === 'rejected');
-
-    return {
-      isSuccess: failures.length === 0,
-      successMsgCount: successes.length,
-      failMsgCount: failures.length,
+    const fcmPayload: MulticastMessage = {
+      tokens: tokens,
+      notification: {
+        title: message.notification.title,
+        body: message.notification.body,
+      },
     };
+
+    try {
+      const response = await admin.messaging().sendEachForMulticast(fcmPayload);
+      console.log('send-multicast-result', response);
+
+      return {
+        isSuccess: response.failureCount === 0,
+        successMsgCount: response.successCount,
+        failMsgCount: response.failureCount,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
 }
